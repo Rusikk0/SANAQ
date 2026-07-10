@@ -1258,8 +1258,7 @@ function completeSale() {
     setSales(sales);
     if (currentPayment === 'debt') {
         const debtors = getDebtors();
-        const debtor = debtors.find(d => d.name.toLowerCase() === debtName.toLowerCase() && d.phone === debtPhone;
-        });
+        const debtor = debtors.find(d => d.name.toLowerCase() === debtName.toLowerCase() && d.phone === debtPhone);
         if (!debtor) {
             debtor = {
                 id: uid(),
