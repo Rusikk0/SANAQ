@@ -1,21 +1,16 @@
 import { getUsers, getLocalUsers, setCurrentUser } from './users.js';
 import { set } from './app-context.js';
 
-
-
 function findUserByLogin(usernameOrEmail) {
-    if (!usernameOrEmail)
-        return null;
+    if (!usernameOrEmail) return null;
     const norm = usernameOrEmail.toLowerCase().trim();
-    var user = getUsers().find(function (u) {
+    const user = getUsers().find(function (u) {
         const email = (u.email || '').toLowerCase();
         const un = (u.username || '').toLowerCase();
         return (email === norm || un === norm || email.split('@')[0] === norm) && u.active !== false;
     });
-    if (user)
-        return user;
-    return getLocalUsers().find(function (u) {
-        return (u.username || '').toLowerCase() === norm && u.active !== false;
+    if (user) return user;
+    return getLocalUsers().find(u => (u.username || '').toLowerCase() === norm && u.active !== false;
     });
 }
 
@@ -31,23 +26,22 @@ async function showLogin() {
     document.getElementById('login-screen').style.display = 'flex';
 }
 
-var _adminPinCallback = null;
+const _adminPinCallback = null;
 
 function setAdminPinCallback(value) {
     _adminPinCallback = value;
 }
 
-var _auditSession = null;
+const _auditSession = null;
 
 function setAuditSession(value) {
     _auditSession = value;
 }
 
 function getUserPin(userId) {
-    if (!userId)
-        return null;
+    if (!userId) return null;
     try {
-        var pins = window.ApDb && window.ApDb.getAppData ? window.ApDb.getAppData('user_pins') : null;
+        const pins = window.ApDb && window.ApDb.getAppData ? window.ApDb.getAppData('user_pins') : null;
         if (!pins)
             pins = JSON.parse(localStorage.getItem('sanaq_user_pins') || '{}');
         return pins[userId] || null;
@@ -58,7 +52,7 @@ function getUserPin(userId) {
 
 function saveUserPin(userId, pin) {
     try {
-        var pins = JSON.parse(localStorage.getItem('sanaq_user_pins') || '{}');
+        const pins = JSON.parse(localStorage.getItem('sanaq_user_pins') || '{}');
         if (pin)
             pins[userId] = pin;
         else
@@ -69,9 +63,6 @@ function saveUserPin(userId, pin) {
     } catch (e) {
     }
 }
-
-
-
 
 set('saveUserPin', saveUserPin);
 set('getUserPin', getUserPin);

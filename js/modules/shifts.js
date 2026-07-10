@@ -8,11 +8,7 @@ import { exportSectionToExcel } from './reports.js';
 import { uid, goPage, openModal } from './ui.js';
 import { setStore } from './store.js';
 
-
-
-function getShifts() {
-    return window.ApDb ? window.ApDb.getShifts() : [];
-}
+const getShifts = () => (window.ApDb ? window.ApDb.getShifts() : []);
 
 function setShifts(arr) {
     if (window.ApDb)
@@ -20,29 +16,24 @@ function setShifts(arr) {
 }
 
 function canManageShift(shift) {
-    if (!shift)
-        return false;
+    if (!shift) return false;
     return isAdmin() || shift.cashierId === currentUser.id || (shift.cashierUsername || '').toLowerCase() === (currentUser.username || '').toLowerCase();
 }
 
 function renderShiftStats() {
-    var shifts = getShifts();
-    var sales = getSales().filter(isSaleActive);
-    var expenses = getExpenses().filter(isExpenseActive);
-    var expTotal = expenses.reduce(function (s, e) {
-        return s + e.amount;
+    const shifts = getShifts();
+    const sales = getSales().filter(isSaleActive);
+    const expenses = getExpenses().filter(isExpenseActive);
+    const expTotal = expenses.reduce(s, e => s + e.amount;
     }, 0);
-    var shiftData = shifts.map(function (sh) {
-        var shiftSales = sales.filter(function (s) {
-            return s.shiftId === sh.id;
+    const shiftData = shifts.map(function (sh) {
+        const shiftSales = sales.filter(s => s.shiftId === sh.id;
         });
-        var rev = shiftSales.reduce(function (s, x) {
-            return s + x.total;
+        const rev = shiftSales.reduce(s, x => s + x.total;
         }, 0);
-        var cost = shiftSales.reduce(function (s, x) {
-            return s + (Number(x.purchasePrice) || 0) * (Number(x.quantity) || 0);
+        const cost = shiftSales.reduce(s, x => s + (Number(x.purchasePrice) || 0) * (Number(x.quantity) || 0);
         }, 0);
-        var cnt = shiftSales.length;
+        const cnt = shiftSales.length;
         return {
             id: sh.id,
             cashier: sh.cashierName || '\u2014',
@@ -55,22 +46,17 @@ function renderShiftStats() {
             profit: rev - cost
         };
     });
-    var totalRev = shiftData.reduce(function (s, x) {
-        return s + x.revenue;
+    const totalRev = shiftData.reduce(s, x => s + x.revenue;
     }, 0);
-    var totalProfit = shiftData.reduce(function (s, x) {
-        return s + x.profit;
+    const totalProfit = shiftData.reduce(s, x => s + x.profit;
     }, 0);
-    var totalShifts = shiftData.length;
-    var openShifts = shiftData.filter(function (s) {
-        return s.status === 'open';
+    const totalShifts = shiftData.length;
+    const openShifts = shiftData.filter(s => s.status === 'open';
     }).length;
     document.getElementById('shifts-stats-cards').innerHTML = card('Всего смен', totalShifts, '') + card('Открытых смен', openShifts, 'ok') + card('Выручка за все смены', fmt(totalRev), 'ok') + card('Прибыль за все смены', fmt(totalProfit), totalProfit >= 0 ? 'ok' : 'err');
-    shiftData.sort(function (a, b) {
-        return (b.openedAt || '').localeCompare(a.openedAt || '');
+    shiftData.sort(a, b => (b.openedAt || '').localeCompare(a.openedAt || '');
     });
-    var rows = shiftData.map(function (s) {
-        return [
+    const rows = shiftData.map(s => [
             s.cashier,
             fmtDate(s.openedAt),
             s.closedAt ? fmtDate(s.closedAt) : '<span class="badge badge-ok">Открыта</span>',
@@ -121,11 +107,10 @@ function closeShift(shiftId) {
 }
 
 function calcShiftTotals(shiftId) {
-    const sales = getSales().filter(function (s) {
-        return s.shiftId === shiftId && isSaleActive(s);
+    const sales = getSales().filter(s => s.shiftId === shiftId && isSaleActive(s);
     });
     let cash = 0, kaspi = 0, transfer = 0, revenue = 0;
-    sales.forEach(function (s) {
+    sales.forEach(s => {
         if (s.payment === 'debt') {
         } else {
             revenue += s.total;
@@ -160,29 +145,25 @@ function renderShiftLists(opts) {
         return;
     let allShifts = getShifts();
     if (onlyMine) {
-        var myId = currentUser.id;
-        var myEmail = (currentUser.email || '').toLowerCase();
-        var myUsername = (currentUser.username || '').toLowerCase();
+        const myId = currentUser.id;
+        const myEmail = (currentUser.email || '').toLowerCase();
+        const myUsername = (currentUser.username || '').toLowerCase();
         allShifts = allShifts.filter(function (s) {
-            if (s.cashierId === myId)
-                return true;
-            var cu = (s.cashierUsername || '').toLowerCase();
+            if (s.cashierId === myId) return true;
+            const cu = (s.cashierUsername || '').toLowerCase();
             return cu === myEmail || cu === myUsername;
         });
     }
-    const openList = allShifts.filter(function (s) {
-        return s.status === 'open';
+    const openList = allShifts.filter(s => s.status === 'open';
     });
-    const closedList = allShifts.filter(function (s) {
-        return s.status === 'closed';
+    const closedList = allShifts.filter(s => s.status === 'closed';
     }).reverse();
     if (onlyMine) {
         openEl.innerHTML = openList.length ? tableHTML([
             'Открыта',
             'Кем открыта',
             ''
-        ], openList.map(function (s) {
-            return [
+        ], openList.map(s => [
                 fmtDate(s.openedAt),
                 s.openedBy || '\u2014',
                 canManageShift(s) ? '<button class="btn btn-sm btn-danger" onclick="closeShiftConfirm(\'' + s.id + '\')">\u23F9 Закрыть и Excel</button>' : '\u2014'
@@ -210,8 +191,7 @@ function renderShiftLists(opts) {
             'Открыта',
             'Кем открыта',
             ''
-        ], openList.map(function (s) {
-            return [
+        ], openList.map(s => [
                 s.cashierName,
                 fmtDate(s.openedAt),
                 s.openedBy || '\u2014',
@@ -267,8 +247,7 @@ function renderMyShiftPage() {
 function exportShiftToExcel(shift) {
     if (!shift)
         return;
-    const sales = getSales().filter(function (s) {
-        return s.shiftId === shift.id && isSaleActive(s);
+    const sales = getSales().filter(s => s.shiftId === shift.id && isSaleActive(s);
     });
     const t = shift.totals || calcShiftTotals(shift.id);
     const receipts = groupSalesIntoReceipts(sales);
@@ -276,7 +255,7 @@ function exportShiftToExcel(shift) {
     const openedAt = new Date(shift.openedAt);
     const closedAt = shift.closedAt ? new Date(shift.closedAt) : null;
     let cogs = 0;
-    sales.forEach(function (s) {
+    sales.forEach(s => {
         cogs += (Number(s.purchasePrice) || 0) * (Number(s.quantity) || 0);
     });
     const grossProfit = (Number(t.revenue) || 0) - cogs;
@@ -284,12 +263,10 @@ function exportShiftToExcel(shift) {
     const expTotal = getExpenses().filter(function (e) {
         if (!isExpenseActive(e))
             return false;
-        if (!e.date)
-            return false;
+        if (!e.date) return false;
         const d = new Date(e.date);
         return d >= openedAt && d <= expEnd;
-    }).reduce(function (sum, e) {
-        return sum + (Number(e.amount) || 0);
+    }).reduce(sum, e => sum + (Number(e.amount) || 0);
     }, 0);
     const netProfit = grossProfit - expTotal;
     let html = '<html><head><meta charset="UTF-8"></head><body>';
@@ -315,12 +292,10 @@ function exportShiftToExcel(shift) {
     html += '<h3>Чеки за смену</h3>';
     html += '<table border="1" cellpadding="5" style="border-collapse:collapse">';
     html += '<tr style="background:#305496;color:#fff"><th>Чек</th><th>Дата</th><th>Товаров (шт)</th><th>Сумма</th><th>Оплата</th><th>Клиент</th><th>Телефон</th></tr>';
-    receipts.forEach(function (r) {
-        const cust = r.customerId ? getCustomers().find(function (c) {
-            return c.id === r.customerId;
+    receipts.forEach(r => {
+        const cust = r.customerId ? getCustomers().find(c => c.id === r.customerId;
         }) : null;
-        const itemsQty = r.items.reduce(function (sum, it) {
-            return sum + (Number(it.quantity) || 0);
+        const itemsQty = r.items.reduce(sum, it => sum + (Number(it.quantity) || 0);
         }, 0);
         html += '<tr>' + '<td>' + esc(r.id.slice(-6)) + '</td>' + '<td>' + esc(fmtDate(r.date)) + '</td>' + '<td>' + itemsQty + '</td>' + '<td>' + (Number(r.total) || 0) + '</td>' + '<td>' + esc(PAY_LABELS[r.payment] || r.payment || '') + '</td>' + '<td>' + esc(cust ? cust.name : '\u2014') + '</td>' + '<td>' + esc(cust ? cust.phone : '\u2014') + '</td>' + '</tr>';
     });
@@ -330,7 +305,7 @@ function exportShiftToExcel(shift) {
     html += '<h3>Продажи (строки) за смену</h3>';
     html += '<table border="1" cellpadding="5" style="border-collapse:collapse">';
     html += '<tr style="background:#4472C4;color:#fff"><th>Чек</th><th>Код</th><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Закуп</th><th>Сумма</th><th>Прибыль</th><th>Оплата</th><th>Дата</th></tr>';
-    sales.forEach(function (s) {
+    sales.forEach(s => {
         const lineCogs = (Number(s.purchasePrice) || 0) * (Number(s.quantity) || 0);
         const lineProfit = (Number(s.total) || 0) - lineCogs;
         html += '<tr>' + '<td>' + esc((s.receiptId || s.id).slice(-6)) + '</td>' + '<td>' + esc(s.productCode) + '</td>' + '<td>' + esc(s.productName) + '</td>' + '<td>' + (Number(s.quantity) || 0) + '</td>' + '<td>' + (Number(s.unitPrice) || 0) + '</td>' + '<td>' + (Number(s.purchasePrice) || 0) + '</td>' + '<td>' + (Number(s.total) || 0) + '</td>' + '<td>' + lineProfit + '</td>' + '<td>' + esc(PAY_LABELS[s.payment] || s.payment) + '</td>' + '<td>' + esc(fmtDate(s.date)) + '</td>' + '</tr>';
@@ -342,9 +317,6 @@ function exportShiftToExcel(shift) {
     const fname = 'Смена_' + safeStore + '_' + (shift.cashierUsername || 'cashier') + '_' + (shift.closedAt || shift.openedAt).slice(0, 10).replace(/-/g, '') + '.xls';
     downloadFile(fname, html, 'application/vnd.ms-excel');
 }
-
-
-
 
 function exportShiftsExcel() {
     exportSectionToExcel('shifts', window._shiftStatsData || [], 'SANAQ_Смены_' + todayStr() + '.xlsx');
@@ -358,7 +330,7 @@ function openMyShift() {
             return;
         }
         const shifts = getShifts();
-        var newId = uid();
+        const newId = uid();
         shifts.push({
             id: newId,
             cashierId: currentUser.id,
@@ -370,10 +342,10 @@ function openMyShift() {
             openedBy: currentUser.name
         });
         setShifts(shifts);
-        var verify = getOpenShiftForCashier(currentUser.id);
+        const verify = getOpenShiftForCashier(currentUser.id);
         if (!verify) {
             console.error('[Shift] Shift not found in cache after setShifts!');
-            var retry = getShifts();
+            const retry = getShifts();
             retry.push({
                 id: newId,
                 cashierId: currentUser.id,
@@ -406,7 +378,7 @@ function openShift() {
         return;
     }
     const shifts = getShifts();
-    var newShift = {
+    const newShift = {
         id: uid(),
         cashierId: currentUser.id,
         cashierUsername: currentUser.email || currentUser.username || '',
@@ -427,13 +399,12 @@ function openShift() {
         goPage('myshift');
     }
     updateSaleShiftBanner();
-    var _shiftId = newShift.id;
+    const _shiftId = newShift.id;
     setTimeout(function () {
-        var stillHere = getOpenShiftForCashier(currentUser.id);
+        const stillHere = getOpenShiftForCashier(currentUser.id);
         if (!stillHere || stillHere.id !== _shiftId) {
             console.error('[Shift] LOST after 2s! Expected:', _shiftId, 'Found:', stillHere ? stillHere.id : null);
-            console.error('[Shift] Cache shifts:', JSON.stringify(getShifts().map(function (s) {
-                return {
+            console.error('[Shift] Cache shifts:', JSON.stringify(getShifts().map(s => {
                     id: s.id,
                     status: s.status
                 };
@@ -443,7 +414,7 @@ function openShift() {
         }
     }, 2000);
     setTimeout(function () {
-        var stillHere = getOpenShiftForCashier(currentUser.id);
+        const stillHere = getOpenShiftForCashier(currentUser.id);
         if (!stillHere || stillHere.id !== _shiftId) {
             console.error('[Shift] LOST after 10s! Expected:', _shiftId, 'Found:', stillHere ? stillHere.id : null);
         } else {
@@ -453,8 +424,7 @@ function openShift() {
 }
 
 function closeShiftConfirm(shiftId) {
-    const shift = getShifts().find(function (s) {
-        return s.id === shiftId;
+    const shift = getShifts().find(s => s.id === shiftId;
     });
     if (!shift || shift.status !== 'open') {
         toast('Смена уже закрыта', 'err');
@@ -476,13 +446,10 @@ function closeShiftConfirm(shiftId) {
 }
 
 function exportShiftById(shiftId) {
-    const shift = getShifts().find(function (s) {
-        return s.id === shiftId;
+    const shift = getShifts().find(s => s.id === shiftId;
     });
     if (shift)
         exportShiftToExcel(shift);
 }
-
-
 
 export { getShifts, setShifts, canManageShift, renderShiftStats, closeShift, calcShiftTotals, renderShiftLists, renderShifts, renderMyShiftPage, exportShiftToExcel, exportShiftsExcel, openMyShift, openShift, closeShiftConfirm, exportShiftById };

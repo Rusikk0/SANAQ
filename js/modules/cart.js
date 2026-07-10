@@ -7,15 +7,13 @@ import { openModal, goPage, renderPosCatBrowser } from './ui.js';
 import { checkPermission, requireAdminPin, isAdmin, getUserMaxDiscount, currentUser, getOpenShiftForCashier } from './users.js';
 import { currentCustomer, getCustomerTier } from './customers.js';
 
-
-
 let saleCart = [];
 
 function setSaleCart(value) {
     saleCart = value;
 }
 
-var _cartDiscountInfo = null;
+const _cartDiscountInfo = null;
 
 function setCartDiscountInfo(value) {
     _cartDiscountInfo = value;
@@ -27,7 +25,7 @@ function applyCartDiscountFinal(type, value, reason) {
         value: value,
         reason: reason
     };
-    saleCart.forEach(function (item) {
+    saleCart.forEach(item => {
         delete item.discount;
         delete item.discountReason;
         delete item.discountType;
@@ -39,34 +37,29 @@ function applyCartDiscountFinal(type, value, reason) {
     toast('Скидка на корзину применена', 'ok');
 }
 
-
-
-
 function selectCartItem(id) {
     setSelectedCartItemId(id);
-    document.querySelectorAll('#sale-cart-body tr').forEach(function (r) {
+    document.querySelectorAll('#sale-cart-body tr').forEach(r => {
         r.classList.remove('selected');
     });
-    var row = document.querySelector('#sale-cart-body tr[data-id="' + id + '"]');
+    const row = document.querySelector('#sale-cart-body tr[data-id="' + id + '"]');
     if (row)
         row.classList.add('selected');
 }
 
 function getSelectedCartItem() {
-    if (!_selectedCartItemId)
-        return null;
-    return saleCart.find(function (c) {
-        return c.id === _selectedCartItemId;
+    if (!_selectedCartItemId) return null;
+    return saleCart.find(c => c.id === _selectedCartItemId;
     }) || null;
 }
 
 function promptCartQty() {
-    var item = getSelectedCartItem();
+    const item = getSelectedCartItem();
     if (!item) {
         toast('Выберите товар в таблице', 'warn');
         return;
     }
-    var newQty = prompt('Новое количество для "' + item.name + '":', item.qty);
+    const newQty = prompt('Новое количество для "' + item.name + '":', item.qty);
     if (newQty === null)
         return;
     newQty = parseInt(newQty) || 0;
@@ -110,14 +103,14 @@ function openCartDiscount() {
 }
 
 function applyCartDiscount() {
-    var type = document.getElementById('cart-discount-type').value;
-    var value = parseFloat(document.getElementById('cart-discount-value').value);
-    var reason = document.getElementById('cart-discount-reason').value.trim();
+    const type = document.getElementById('cart-discount-type').value;
+    const value = parseFloat(document.getElementById('cart-discount-value').value);
+    const reason = document.getElementById('cart-discount-reason').value.trim();
     if (!value || value <= 0) {
         toast('Введите значение скидки', 'err');
         return;
     }
-    var maxAllowed = isAdmin() ? 25 : getUserMaxDiscount(currentUser.id);
+    const maxAllowed = isAdmin() ? 25 : getUserMaxDiscount(currentUser.id);
     if (type === 'percent' && value > 25) {
         toast('Максимальная скидка в системе \u2014 25%', 'err');
         return;
@@ -146,8 +139,7 @@ function addToCart(productId) {
         goPage('myshift');
         return;
     }
-    const product = getProducts().find(function (p) {
-        return p.id === productId;
+    const product = getProducts().find(p => p.id === productId;
     });
     if (!product)
         return;
@@ -155,8 +147,7 @@ function addToCart(productId) {
         toast('Товара нет на складе', 'err');
         return;
     }
-    const existing = saleCart.find(function (c) {
-        return c.id === productId;
+    const existing = saleCart.find(c => c.id === productId;
     });
     if (existing) {
         if (existing.qty >= product.quantity) {
@@ -184,15 +175,13 @@ function addToCart(productId) {
 }
 
 function updateCartQty(productId, delta) {
-    const item = saleCart.find(function (c) {
-        return c.id === productId;
+    const item = saleCart.find(c => c.id === productId;
     });
     if (!item)
         return;
     const newQty = item.qty + delta;
     if (newQty < 1) {
-        saleCart = saleCart.filter(function (c) {
-            return c.id !== productId;
+        saleCart = saleCart.filter(c => c.id !== productId;
         });
     } else {
         if (newQty > item.maxQty) {
@@ -205,19 +194,18 @@ function updateCartQty(productId, delta) {
 }
 
 function removeFromCart(productId) {
-    saleCart = saleCart.filter(function (c) {
-        return c.id !== productId;
+    saleCart = saleCart.filter(c => c.id !== productId;
     });
     renderSaleCart();
 }
 
 function changeCartQty(productId, delta) {
-    var idx = saleCart.findIndex(function (c) {
+    const idx = saleCart.findIndex(function (c) {
         return c.id === productId;
     });
     if (idx === -1)
         return;
-    var newQty = (saleCart[idx].qty || 1) + delta;
+    const newQty = (saleCart[idx].qty || 1) + delta;
     if (newQty < 1) {
         removeFromCart(productId);
         return;
@@ -229,7 +217,7 @@ function changeCartQty(productId, delta) {
 function renderSaleCart() {
     const tbody = document.getElementById('sale-cart-body');
     const subTotalEl = document.getElementById('sale-subtotal');
-    var canChangeQty = checkPermission('canChangeQty');
+    const canChangeQty = checkPermission('canChangeQty');
     const discountRow = document.getElementById('sale-discount-row');
     const discountEl = document.getElementById('sale-discount');
     const bonusRow = document.getElementById('sale-bonus-row');
@@ -239,7 +227,7 @@ function renderSaleCart() {
     const changeDisplay = document.getElementById('sale-change-display');
     const btnComplete = document.getElementById('btn-complete-sale');
     const btnDefer = document.getElementById('btn-defer-sale');
-    var countEl = document.getElementById('pos-cart-count');
+    const countEl = document.getElementById('pos-cart-count');
     if (!saleCart.length) {
         tbody.innerHTML = '<tr><td colspan="6" class="pos-empty-msg">Список пуст</td></tr>';
         if (subTotalEl)
@@ -262,10 +250,10 @@ function renderSaleCart() {
             btnComplete.disabled = true;
         if (btnDefer)
             btnDefer.disabled = true;
-        var ci = document.getElementById('sale-customer-info');
+        const ci = document.getElementById('sale-customer-info');
         if (ci)
             ci.style.display = 'none';
-        var bw = document.getElementById('sale-bonus-wrap');
+        const bw = document.getElementById('sale-bonus-wrap');
         if (bw)
             bw.style.display = 'none';
         return;
@@ -274,10 +262,10 @@ function renderSaleCart() {
         btnComplete.disabled = false;
     if (btnDefer)
         btnDefer.disabled = false;
-    saleCart.forEach(function (item) {
-        var promo = getProductDiscount(item.id);
+    saleCart.forEach(item => {
+        const promo = getProductDiscount(item.id);
         if (promo) {
-            var itemDiscount = promo.discountType === 'percent' ? item.price * promo.discountValue / 100 : promo.discountValue;
+            const itemDiscount = promo.discountType === 'percent' ? item.price * promo.discountValue / 100 : promo.discountValue;
             item._discount = itemDiscount;
             item._promoName = promo.id;
         } else {
@@ -285,10 +273,9 @@ function renderSaleCart() {
             item._promoName = null;
         }
     });
-    var subTotal = saleCart.reduce(function (sum, c) {
-        return sum + (c.price - (c._discount || 0)) * c.qty;
+    const subTotal = saleCart.reduce(sum, c => sum + (c.price - (c._discount || 0)) * c.qty;
     }, 0);
-    var cartDiscAmt = 0;
+    const cartDiscAmt = 0;
     if (_cartDiscountInfo) {
         if (_cartDiscountInfo.type === 'percent') {
             cartDiscAmt = subTotal * _cartDiscountInfo.value / 100;
@@ -296,12 +283,12 @@ function renderSaleCart() {
             cartDiscAmt = Math.min(_cartDiscountInfo.value, subTotal);
         }
     }
-    var remainingCartDisc = cartDiscAmt;
+    const remainingCartDisc = cartDiscAmt;
     tbody.innerHTML = saleCart.map(function (c, i) {
-        var promoDisc = c._discount || 0;
-        var priceCell = promoDisc > 0 ? '<span style="text-decoration:line-through;color:var(--text-muted)">' + fmt(c.price) + '</span> <span style="color:var(--err);font-weight:600">-' + fmt(promoDisc) + '</span>' : fmt(c.price);
-        var itemBase = (c.price - promoDisc) * c.qty;
-        var cartDiscShare = 0;
+        const promoDisc = c._discount || 0;
+        const priceCell = promoDisc > 0 ? '<span style="text-decoration:line-through;color:var(--text-muted)">' + fmt(c.price) + '</span> <span style="color:var(--err);font-weight:600">-' + fmt(promoDisc) + '</span>' : fmt(c.price);
+        const itemBase = (c.price - promoDisc) * c.qty;
+        const cartDiscShare = 0;
         if (cartDiscAmt > 0 && subTotal > 0) {
             if (i === saleCart.length - 1) {
                 cartDiscShare = remainingCartDisc;
@@ -312,7 +299,7 @@ function renderSaleCart() {
             }
             remainingCartDisc -= cartDiscShare;
         }
-        var discParts = [];
+        const discParts = [];
         if (c._promoName) {
             discParts.push('<span title="' + esc(c._promoName) + '" style="color:var(--ok);font-weight:600">\uD83C\uDFF7</span>');
         }
@@ -322,7 +309,7 @@ function renderSaleCart() {
         if (discParts.length === 0) {
             discParts.push('<span onclick="event.stopPropagation();openItemDiscount(\'' + c.id + '\')" style="cursor:pointer;color:var(--text-muted);font-size:12px;font-weight:500">\uD83C\uDFF7</span>');
         }
-        var totAmt = itemBase - cartDiscShare;
+        const totAmt = itemBase - cartDiscShare;
         return '<tr onclick="selectCartItem(\'' + c.id + '\')" data-id="' + c.id + '">' + '<td>' + (i + 1) + '</td>' + '<td><div class="pos-cart-row-name">' + esc(c.name) + '</div><div class="pos-cart-row-code">' + (c.code || c.barcode || (c.isUniversal ? 'универсальный' : '') || '') + '</div></td>' + '<td>' + priceCell + '</td>' + '<td><div style="display:flex;align-items:center;gap:4px;justify-content:center">' + (canChangeQty ? '<button class="qty-btn" onclick="event.stopPropagation();changeCartQty(\'' + c.id + '\',-1)" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-weight:700;font-size:16px;line-height:1;display:inline-flex;align-items:center;justify-content:center">\u2212</button>' : '') + '<span class="qty-editable" onclick="event.stopPropagation();openQtyPopup(\'' + c.id + '\')" style="cursor:pointer;font-weight:700;font-size:16px;padding:4px 8px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)" title="Нажмите чтобы изменить количество">' + c.qty + '</span>' + (canChangeQty ? '<button class="qty-btn" onclick="event.stopPropagation();changeCartQty(\'' + c.id + '\',1)" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-weight:700;font-size:16px;line-height:1;display:inline-flex;align-items:center;justify-content:center">+</button>' : '') + '</div></td>' + '<td>' + discParts.join(' ') + '</td>' + '<td>' + fmt(totAmt) + '</td>' + '</tr>';
     }).join('');
     if (countEl)
@@ -334,31 +321,31 @@ function renderSaleCart() {
     let subAfterDiscount = subTotal - cartDiscAmt;
     if (currentCustomer) {
         const tier = getCustomerTier(currentCustomer.spent || 0);
-        var ci = document.getElementById('sale-customer-info');
+        const ci = document.getElementById('sale-customer-info');
         if (ci) {
             ci.style.display = 'flex';
-            var ciText = document.getElementById('sale-customer-info-text');
+            const ciText = document.getElementById('sale-customer-info-text');
             if (ciText)
                 ciText.innerHTML = 'Клиент: <strong>' + (currentCustomer.name || '\u2014') + '</strong> \xB7 Уровень: <strong>' + tier.name + '</strong> (-' + tier.discount * 100 + '%) \xB7 Бонусы: <strong>' + fmt(currentCustomer.bonusBalance) + '</strong>';
         }
-        var bw = document.getElementById('sale-bonus-wrap');
+        const bw = document.getElementById('sale-bonus-wrap');
         if (bw)
             bw.style.display = 'flex';
         discountAmt = subAfterDiscount * tier.discount;
         subAfterDiscount = subAfterDiscount - discountAmt;
         maxBonus = Math.min(Number(currentCustomer.bonusBalance) || 0, subAfterDiscount * tier.maxSpend);
         maxBonus = Math.floor(maxBonus);
-        var bm = document.getElementById('sale-bonus-max');
+        const bm = document.getElementById('sale-bonus-max');
         if (bm)
             bm.textContent = '(макс ' + fmt(maxBonus) + ')';
     } else {
-        var ci = document.getElementById('sale-customer-info');
+        const ci = document.getElementById('sale-customer-info');
         if (ci)
             ci.style.display = 'none';
-        var bw = document.getElementById('sale-bonus-wrap');
+        const bw = document.getElementById('sale-bonus-wrap');
         if (bw)
             bw.style.display = 'none';
-        var bs = document.getElementById('sale-bonus-spend');
+        const bs = document.getElementById('sale-bonus-spend');
         if (bs)
             bs.value = 0;
     }
@@ -368,11 +355,11 @@ function renderSaleCart() {
     } else if (discountRow) {
         discountRow.style.display = 'none';
     }
-    var cartDiscRow = document.getElementById('sale-cart-discount-row');
-    var cartDiscEl = document.getElementById('sale-cart-discount');
+    const cartDiscRow = document.getElementById('sale-cart-discount-row');
+    const cartDiscEl = document.getElementById('sale-cart-discount');
     if (cartDiscAmt > 0 && cartDiscRow && cartDiscEl) {
         cartDiscRow.style.display = 'flex';
-        var discLabel = _cartDiscountInfo.type === 'percent' ? _cartDiscountInfo.value + '%' : fmt(_cartDiscountInfo.value) + '\u20B8';
+        const discLabel = _cartDiscountInfo.type === 'percent' ? _cartDiscountInfo.value + '%' : fmt(_cartDiscountInfo.value) + '\u20B8';
         cartDiscEl.innerHTML = '-' + fmt(cartDiscAmt) + ' (' + discLabel + ') <span onclick="removeCartDiscount()" style="cursor:pointer;color:var(--err);font-size:14px;margin-left:4px" title="Убрать скидку">\u2715</span>';
         if (_cartDiscountInfo.reason)
             cartDiscEl.innerHTML += ' \u2014 ' + esc(_cartDiscountInfo.reason);
@@ -380,7 +367,7 @@ function renderSaleCart() {
         cartDiscRow.style.display = 'none';
     }
     let bonusSpend = 0;
-    var bsEl = document.getElementById('sale-bonus-spend');
+    const bsEl = document.getElementById('sale-bonus-spend');
     if (bsEl) {
         bonusSpend = parseInt(bsEl.value) || 0;
         if (bonusSpend > maxBonus) {
@@ -413,11 +400,11 @@ function renderSaleCart() {
     if (currentPayment === 'cash') {
         calcChange();
     } else if (currentPayment === 'mixed') {
-        var mc = document.getElementById('mixed-cash');
-        var mk = document.getElementById('mixed-kaspi');
+        const mc = document.getElementById('mixed-cash');
+        const mk = document.getElementById('mixed-kaspi');
         if (mc && mk) {
-            var cashVal = parseFloat(mc.value) || 0;
-            var kaspiVal = parseFloat(mk.value) || 0;
+            const cashVal = parseFloat(mc.value) || 0;
+            const kaspiVal = parseFloat(mk.value) || 0;
             if (cashVal === 0 && kaspiVal === 0) {
                 mc.value = finalTotal;
                 mk.value = 0;
@@ -433,8 +420,6 @@ function renderSaleCart() {
         calcMixedRemainder();
     }
 }
-
-
 
 set('getSelectedCartItem', getSelectedCartItem);
 set('updateCartQty', updateCartQty);

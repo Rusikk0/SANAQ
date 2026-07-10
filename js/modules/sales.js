@@ -13,8 +13,6 @@ import { getDocuments, setDocuments, renderDocuments } from './documents.js';
 import { exportSectionToExcel } from './reports.js';
 import { _auditSession, setAuditSession } from './auth.js';
 
-
-
 const PAY_LABELS = {
     cash: 'Наличные',
     kaspi: 'Kaspi QR',
@@ -29,9 +27,7 @@ function setCurrentPayment(value) {
     currentPayment = value;
 }
 
-function getSales() {
-    return window.ApDb ? window.ApDb.getSales() : [];
-}
+const getSales = () => (window.ApDb ? window.ApDb.getSales() : []);
 
 function setSales(arr) {
     if (window.ApDb)
@@ -51,8 +47,7 @@ function migrateSalesRecords() {
             changed = true;
         }
         if (out.purchasePrice == null) {
-            const p = out.productId ? products.find(function (x) {
-                return x.id === out.productId;
+            const p = out.productId ? products.find(x => x.id === out.productId;
             }) : null;
             out = Object.assign({}, out, { purchasePrice: p ? Number(p.purchasePrice) || 0 : 0 });
             changed = true;
@@ -65,7 +60,7 @@ function migrateSalesRecords() {
 
 function focusSaleSearch() {
     setTimeout(function () {
-        var el = document.getElementById('sale-search');
+        const el = document.getElementById('sale-search');
         if (el && document.getElementById('page-sales').classList.contains('active'))
             el.focus();
     }, 150);
@@ -86,7 +81,7 @@ function adminCancelSaleBtn(s) {
 }
 
 function togglePaymentSection(id, show) {
-    var el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (!el)
         return;
     if (show) {
@@ -97,8 +92,7 @@ function togglePaymentSection(id, show) {
 }
 
 function renderSalesToday() {
-    const list = getSales().filter(function (s) {
-        return isToday(s.date) && isSaleActive(s);
+    const list = getSales().filter(s => isToday(s.date) && isSaleActive(s);
     });
     const receipts = groupSalesIntoReceipts(list);
     const cols = [
@@ -110,11 +104,9 @@ function renderSalesToday() {
         'Время',
         ''
     ];
-    document.getElementById('sales-today-list').innerHTML = receipts.length ? tableHTML(cols, receipts.map(function (r) {
-        return [
+    document.getElementById('sales-today-list').innerHTML = receipts.length ? tableHTML(cols, receipts.map(r => [
             '<span class="code-tag">\u2116 ' + r.id.slice(-6) + '</span>',
-            r.items.reduce(function (sum, it) {
-                return sum + (Number(it.quantity) || 0);
+            r.items.reduce(sum, it => sum + (Number(it.quantity) || 0);
             }, 0),
             fmt(r.total),
             badgePay(r.payment, r.items[0]),
@@ -126,10 +118,10 @@ function renderSalesToday() {
 }
 
 function buildSalePKOHTML(sale, receiptId, storeName, total) {
-    var date = sale.date || new Date().toISOString();
-    var payer = sale.customerName || sale.clientName || '\u2014';
-    var basis = 'Оплата по чеку \u2116' + receiptId.slice(-6) + ' от ' + fmtDate(date);
-    var h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:700px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
+    const date = sale.date || new Date().toISOString();
+    const payer = sale.customerName || sale.clientName || '\u2014';
+    const basis = 'Оплата по чеку \u2116' + receiptId.slice(-6) + ' от ' + fmtDate(date);
+    const h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:700px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
     h += '<div style="text-align:center;font-size:16px;font-weight:700;margin-bottom:8px">ПРИХОДНЫЙ КАССОВЫЙ ОРДЕР</div>';
     h += '<div style="display:flex;justify-content:space-between;margin-bottom:16px">' + '<span><strong>\u2116:</strong> ' + receiptId.slice(-6) + '</span>' + '<span><strong>Дата:</strong> ' + fmtDate(date) + '</span>' + '</div>';
     h += '<div style="border:1px solid #000;padding:16px;margin-bottom:16px">';
@@ -155,8 +147,7 @@ function cancelSale(saleId) {
         return;
     if (sale.productId) {
         const products = getProducts();
-        const product = products.find(function (p) {
-            return p.id === sale.productId;
+        const product = products.find(p => p.id === sale.productId;
         });
         if (product) {
             product.quantity += sale.quantity;
@@ -180,11 +171,11 @@ function cancelSale(saleId) {
 }
 
 function renderSalesHeatmap(sales) {
-    var container = document.getElementById('sales-heatmap');
+    const container = document.getElementById('sales-heatmap');
     if (!container)
         return;
-    var heat = {};
-    var days = [
+    const heat = {};
+    const days = [
         'Вс',
         'Пн',
         'Вт',
@@ -198,30 +189,30 @@ function renderSalesHeatmap(sales) {
         for (var h = 0; h < 24; h++)
             heat[d][h] = 0;
     }
-    sales.forEach(function (s) {
-        var dt = new Date(s.date);
-        var day = dt.getDay();
-        var hour = dt.getHours();
+    sales.forEach(s => {
+        const dt = new Date(s.date);
+        const day = dt.getDay();
+        const hour = dt.getHours();
         if (heat[day] && heat[day][hour] !== undefined)
             heat[day][hour] += Number(s.total) || 0;
     });
-    var maxVal = 0;
+    const maxVal = 0;
     for (var d2 = 0; d2 < 7; d2++)
         for (var h2 = 0; h2 < 24; h2++)
             maxVal = Math.max(maxVal, heat[d2][h2]);
     maxVal = maxVal || 1;
-    var html = '<table style="border-collapse:collapse;font-size:11px"><thead><tr><th style="padding:4px;width:30px"></th>';
+    const html = '<table style="border-collapse:collapse;font-size:11px"><thead><tr><th style="padding:4px;width:30px"></th>';
     for (var h3 = 0; h3 < 24; h3++)
         html += '<th style="padding:4px;min-width:28px;text-align:center;font-weight:400;color:var(--text-muted)">' + h3 + '</th>';
     html += '</tr></thead><tbody>';
     for (var d3 = 0; d3 < 7; d3++) {
         html += '<tr><td style="padding:4px;font-weight:600;text-align:right;color:var(--text-muted)">' + days[d3] + '</td>';
         for (var h4 = 0; h4 < 24; h4++) {
-            var val = heat[d3][h4];
-            var intensity = val / maxVal;
-            var r = Math.round(255 - intensity * 200);
-            var g = Math.round(255 - intensity * 150);
-            var b = Math.round(255 - intensity * 80);
+            const val = heat[d3][h4];
+            const intensity = val / maxVal;
+            const r = Math.round(255 - intensity * 200);
+            const g = Math.round(255 - intensity * 150);
+            const b = Math.round(255 - intensity * 80);
             html += '<td style="padding:2px;text-align:center;background:rgb(' + r + ',' + g + ',' + b + ');border-radius:3px;font-size:10px;color:' + (intensity > 0.5 ? '#fff' : '#666') + '" title="' + days[d3] + ' ' + h4 + ':00 \u2014 ' + fmt(Math.round(val)) + ' \u20B8">' + (val > 0 ? val > 100000 ? '\uD83D\uDD25' : val > 10000 ? '\u2022' : '\xB7' : '') + '</td>';
         }
         html += '</tr>';
@@ -231,22 +222,21 @@ function renderSalesHeatmap(sales) {
 }
 
 function renderMostExpensiveReceipt(receipts) {
-    var container = document.getElementById('most-expensive-receipt');
+    const container = document.getElementById('most-expensive-receipt');
     if (!container)
         return;
     if (!receipts.length) {
         container.innerHTML = '<div class="empty">Нет данных</div>';
         return;
     }
-    var best = receipts[0];
-    receipts.forEach(function (r) {
+    const best = receipts[0];
+    receipts.forEach(r => {
         if (r.total > best.total)
             best = r;
     });
-    var cashierName = best.userName || '\u2014';
-    var items = best.items || [];
-    var qty = items.reduce(function (s, it) {
-        return s + (Number(it.quantity) || 0);
+    const cashierName = best.userName || '\u2014';
+    const items = best.items || [];
+    const qty = items.reduce(s, it => s + (Number(it.quantity) || 0);
     }, 0);
     container.innerHTML = '<div class="card" style="border-left:3px solid var(--warn)">' + '<div style="font-weight:700;font-size:18px;color:var(--text)">' + fmt(best.total) + ' \u20B8</div>' + '<div style="display:flex;gap:16px;margin-top:6px;flex-wrap:wrap;font-size:13px;color:var(--text-secondary)">' + '<span>\uD83D\uDC64 ' + esc(cashierName) + '</span>' + '<span>\uD83D\uDCE6 ' + qty + ' шт.</span>' + '<span>\uD83D\uDD50 ' + fmtDate(best.date) + '</span>' + '<span>\uD83D\uDCB3 ' + badgePay(best.payment, best.items[0]) + '</span>' + '</div></div>';
 }
@@ -271,7 +261,7 @@ function updateSaleShiftBanner() {
 
 function badgePay(pay, item) {
     if (pay === 'mixed' && item) {
-        var parts = [];
+        const parts = [];
         if (Number(item.cashAmount) > 0)
             parts.push('\uD83D\uDCB5' + fmt(item.cashAmount));
         if (Number(item.kaspiAmount) > 0)
@@ -293,7 +283,7 @@ function badgePay(pay, item) {
 
 function groupSalesIntoReceipts(salesList) {
     const map = {};
-    (salesList || []).forEach(function (s) {
+    (salesList || []).forEach(s => {
         const rid = s.receiptId || s.id;
         if (!map[rid]) {
             map[rid] = {
@@ -306,7 +296,7 @@ function groupSalesIntoReceipts(salesList) {
                 username: s.username,
                 status: s.status,
                 debtorName: s.debtorName || '',
-                debtPhone: s.debtPhone || '',
+                debtPhone: (s.debtPhone !== undefined && s.debtPhone !== null) ? String(s.debtPhone) : '',
                 debtReturnDate: s.debtReturnDate || '',
                 cashAmount: Number(s.cashAmount) || 0,
                 kaspiAmount: Number(s.kaspiAmount) || 0,
@@ -325,25 +315,22 @@ function groupSalesIntoReceipts(salesList) {
         if (!map[rid].date || s.date && s.date > map[rid].date)
             map[rid].date = s.date;
     });
-    return Object.keys(map).map(function (k) {
-        return map[k];
-    }).sort(function (a, b) {
-        return String(b.date || '').localeCompare(String(a.date || ''));
+    return Object.keys(map).map(k => map[k];
+    }).sort(a, b => String(b.date || '').localeCompare(String(a.date || ''));
     });
 }
 
 function completeDebtPayment(debtorId, amount, paymentMethod) {
-    var debtor = getDebtors().find(function (d) {
-        return d.id === debtorId;
+    const debtor = getDebtors().find(d => d.id === debtorId;
     });
     if (!debtor) {
         toast('Должник не найден', 'err');
         return;
     }
-    var shift = getOpenShiftForCashier(currentUser.id) || getOpenShiftForCashier(currentUser.username);
-    var sales = getSales();
-    var receiptId = uid();
-    var dateStr = new Date().toISOString();
+    const shift = getOpenShiftForCashier(currentUser.id) || getOpenShiftForCashier(currentUser.username);
+    const sales = getSales();
+    const receiptId = uid();
+    const dateStr = new Date().toISOString();
     sales.push({
         id: uid(),
         receiptId: receiptId,
@@ -365,11 +352,11 @@ function completeDebtPayment(debtorId, amount, paymentMethod) {
         date: dateStr,
         status: 'completed',
         debtorName: debtor.name || '',
-        debtPhone: debtor.phone || '',
+        debtPhone: (debtor.phone !== undefined && debtor.phone !== null) ? String(debtor.phone) : '',
         debtReturnDate: ''
     });
     setSales(sales);
-    var debts = getDebts();
+    const debts = getDebts();
     debts.push({
         id: uid(),
         debtorId: debtorId,
@@ -384,13 +371,11 @@ function completeDebtPayment(debtorId, amount, paymentMethod) {
         note: 'Оплата через ' + (paymentMethod === 'cash' ? 'наличные' : paymentMethod === 'kaspi' ? 'Kaspi QR' : 'Банк'),
         date: dateStr
     });
-    var openDebts = debts.filter(function (d) {
-        return d.debtorId === debtorId && d.status === 'open' && d.amount > 0;
+    const openDebts = debts.filter(d => d.debtorId === debtorId && d.status === 'open' && d.amount > 0;
     });
-    openDebts.sort(function (a, b) {
-        return (a.date || '').localeCompare(b.date || '');
+    openDebts.sort(a, b => (a.date || '').localeCompare(b.date || '');
     });
-    var remaining = amount;
+    const remaining = amount;
     debts = debts.map(function (d) {
         if (d.debtorId === debtorId && d.status === 'open' && d.amount > 0 && remaining > 0) {
             if (d.amount <= remaining) {
@@ -407,20 +392,11 @@ function completeDebtPayment(debtorId, amount, paymentMethod) {
     renderSalesToday();
 }
 
+const getWriteOffs = () => (window.ApDb ? window.ApDb.getWriteOffs() : []);
 
+const getAudits = () => (window.ApDb ? window.ApDb.getAudits() : []);
 
-
-function getWriteOffs() {
-    return window.ApDb ? window.ApDb.getWriteOffs() : [];
-}
-
-function getAudits() {
-    return window.ApDb ? window.ApDb.getAudits() : [];
-}
-
-function getDeferred() {
-    return window.ApDb ? window.ApDb.getDeferred() : [];
-}
+const getDeferred = () => (window.ApDb ? window.ApDb.getDeferred() : []);
 
 function setDeferred(arr) {
     if (window.ApDb)
@@ -428,20 +404,19 @@ function setDeferred(arr) {
 }
 
 function onSaleSearch() {
-    var term = document.getElementById('sale-search').value;
-    var box = document.getElementById('sale-results');
+    const term = document.getElementById('sale-search').value;
+    const box = document.getElementById('sale-results');
     if (!box)
         return;
-    var catFilter = _posBrowserState.cat || '';
+    const catFilter = _posBrowserState.cat || '';
     if (!term.trim() && !catFilter) {
         box.classList.add('hidden');
         box.innerHTML = '';
         return;
     }
-    var matches = term.trim() ? smartMatchProducts(term) : getProducts();
+    const matches = term.trim() ? smartMatchProducts(term) : getProducts();
     if (catFilter)
-        matches = matches.filter(function (p) {
-            return p.category === catFilter;
+        matches = matches.filter(p => p.category === catFilter;
         });
     if (!matches.length) {
         box.classList.remove('hidden');
@@ -449,8 +424,7 @@ function onSaleSearch() {
         return;
     }
     box.classList.remove('hidden');
-    box.innerHTML = matches.map(function (p) {
-        return '<div class="sale-result-item" onclick="addToCart(\'' + p.id + '\')">' + '<span class="code-tag">' + (p.code || '\u2014') + '</span> ' + (p.barcode ? '<span class="barcode-tag">' + p.barcode + '</span> ' : '') + '<span class="name">' + esc(p.name) + '</span><br>' + '<span style="font-size:12px;color:var(--muted)">Остаток: ' + p.quantity + ' \xB7 ' + fmt(p.price) + '</span></div>';
+    box.innerHTML = matches.map(p => '<div class="sale-result-item" onclick="addToCart(\'' + p.id + '\')">' + '<span class="code-tag">' + (p.code || '\u2014') + '</span> ' + (p.barcode ? '<span class="barcode-tag">' + p.barcode + '</span> ' : '') + '<span class="name">' + esc(p.name) + '</span><br>' + '<span style="font-size:12px;color:var(--muted)">Остаток: ' + p.quantity + ' \xB7 ' + fmt(p.price) + '</span></div>';
     }).join('');
 }
 
@@ -470,43 +444,43 @@ function clearSaleSelection(noConfirm) {
     document.getElementById('sale-customer-name').style.display = 'none';
     document.getElementById('sale-customer-info').style.display = 'none';
     document.getElementById('sale-bonus-wrap').style.display = 'none';
-    var bs = document.getElementById('sale-bonus-spend');
+    const bs = document.getElementById('sale-bonus-spend');
     if (bs)
         bs.value = 0;
-    var cg = document.getElementById('cash-given');
+    const cg = document.getElementById('cash-given');
     if (cg)
         cg.value = '';
-    var cc = document.getElementById('cash-change');
+    const cc = document.getElementById('cash-change');
     if (cc)
         cc.value = '';
-    var mc = document.getElementById('mixed-cash');
+    const mc = document.getElementById('mixed-cash');
     if (mc)
         mc.value = '0';
-    var mk = document.getElementById('mixed-kaspi');
+    const mk = document.getElementById('mixed-kaspi');
     if (mk)
         mk.value = '0';
-    var mt = document.getElementById('mixed-transfer');
+    const mt = document.getElementById('mixed-transfer');
     if (mt)
         mt.value = '0';
-    var mcg = document.getElementById('mixed-cash-given');
+    const mcg = document.getElementById('mixed-cash-given');
     if (mcg)
         mcg.value = '';
-    var mcc = document.getElementById('mixed-cash-change');
+    const mcc = document.getElementById('mixed-cash-change');
     if (mcc)
         mcc.value = '';
-    var mr = document.getElementById('mixed-remainder');
+    const mr = document.getElementById('mixed-remainder');
     if (mr)
         mr.innerHTML = '';
-    var dn = document.getElementById('debt-pay-name');
+    const dn = document.getElementById('debt-pay-name');
     if (dn)
         dn.value = '';
-    var dp = document.getElementById('debt-pay-phone');
+    const dp = document.getElementById('debt-pay-phone');
     if (dp)
         dp.value = '';
-    var dd = document.getElementById('debt-pay-due');
+    const dd = document.getElementById('debt-pay-due');
     if (dd)
         dd.value = '';
-    var dno = document.getElementById('debt-pay-note');
+    const dno = document.getElementById('debt-pay-note');
     if (dno)
         dno.value = '';
     togglePaymentSection('cash-change-wrap', currentPayment === 'cash');
@@ -527,11 +501,10 @@ function onSaleSearchKey(e) {
         addToCart(exact.id);
         return;
     }
-    var catFilter = _posBrowserState.cat || '';
-    var matches = smartMatchProducts(term);
+    const catFilter = _posBrowserState.cat || '';
+    const matches = smartMatchProducts(term);
     if (catFilter)
-        matches = matches.filter(function (p) {
-            return p.category === catFilter;
+        matches = matches.filter(p => p.category === catFilter;
         });
     if (matches.length === 1)
         addToCart(matches[0].id);
@@ -542,13 +515,13 @@ function onSaleSearchKey(e) {
 }
 
 function calcChange() {
-    var totalEl = document.getElementById('sale-total');
-    var given = parseFloat(document.getElementById('cash-given').value) || 0;
-    var total = parseFloat(totalEl.dataset.value || totalEl.value || 0);
-    var change = given - total;
-    var changeEl = document.getElementById('cash-change');
-    var changeDisplay = document.getElementById('sale-change-display');
-    var btnComplete = document.getElementById('btn-complete-sale');
+    const totalEl = document.getElementById('sale-total');
+    const given = parseFloat(document.getElementById('cash-given').value) || 0;
+    const total = parseFloat(totalEl.dataset.value || totalEl.value || 0);
+    const change = given - total;
+    const changeEl = document.getElementById('cash-change');
+    const changeDisplay = document.getElementById('sale-change-display');
+    const btnComplete = document.getElementById('btn-complete-sale');
     if (given <= 0) {
         if (changeEl) {
             changeEl.value = '';
@@ -584,16 +557,16 @@ function calcChange() {
 }
 
 function calcMixedRemainder(changed) {
-    var totalEl = document.getElementById('sale-total');
-    var total = parseFloat(totalEl.dataset.value || totalEl.value || 0);
-    var cashEl = document.getElementById('mixed-cash');
-    var kaspiEl = document.getElementById('mixed-kaspi');
-    var transEl = document.getElementById('mixed-transfer');
-    var cash = parseFloat(cashEl.value) || 0;
-    var kaspi = parseFloat(kaspiEl.value) || 0;
-    var trans = parseFloat(transEl.value) || 0;
+    const totalEl = document.getElementById('sale-total');
+    const total = parseFloat(totalEl.dataset.value || totalEl.value || 0);
+    const cashEl = document.getElementById('mixed-cash');
+    const kaspiEl = document.getElementById('mixed-kaspi');
+    const transEl = document.getElementById('mixed-transfer');
+    const cash = parseFloat(cashEl.value) || 0;
+    const kaspi = parseFloat(kaspiEl.value) || 0;
+    const trans = parseFloat(transEl.value) || 0;
     if (changed === 'cash') {
-        var rest = Math.max(0, total - cash);
+        const rest = Math.max(0, total - cash);
         kaspi = Math.round(rest / 2);
         trans = rest - kaspi;
         kaspiEl.value = kaspi;
@@ -605,16 +578,16 @@ function calcMixedRemainder(changed) {
         kaspi = Math.max(0, total - cash - trans);
         kaspiEl.value = kaspi;
     }
-    var sum = cash + kaspi + trans;
-    var rem = total - sum;
-    var el = document.getElementById('mixed-remainder');
+    const sum = cash + kaspi + trans;
+    const rem = total - sum;
+    const el = document.getElementById('mixed-remainder');
     if (!el)
         return;
-    var cashGivenEl = document.getElementById('mixed-cash-given');
-    var cashChangeEl = document.getElementById('mixed-cash-change');
-    var cashGiven = parseFloat(cashGivenEl.value) || 0;
+    const cashGivenEl = document.getElementById('mixed-cash-given');
+    const cashChangeEl = document.getElementById('mixed-cash-change');
+    const cashGiven = parseFloat(cashGivenEl.value) || 0;
     if (cashGiven > 0) {
-        var change = cashGiven - cash;
+        const change = cashGiven - cash;
         if (change < 0) {
             cashChangeEl.value = 'Не хватает';
             cashChangeEl.style.color = 'var(--err)';
@@ -625,8 +598,8 @@ function calcMixedRemainder(changed) {
     } else {
         cashChangeEl.value = '';
     }
-    var btnComplete = document.getElementById('btn-complete-sale');
-    var changeDisplay = document.getElementById('sale-change-display');
+    const btnComplete = document.getElementById('btn-complete-sale');
+    const changeDisplay = document.getElementById('sale-change-display');
     if (Math.abs(rem) < 0.01) {
         el.innerHTML = '<span style="color:#059669;font-weight:600">\u2713 Сумма совпадает</span>';
         if (changeDisplay) {
@@ -657,20 +630,19 @@ function deferSale() {
         toast('Корзина пуста', 'err');
         return;
     }
-    var deferred = getDeferred();
-    var products = getProducts();
-    var name = currentCustomer ? currentCustomer.name : '';
-    var phone = currentCustomer ? currentCustomer.phone || '' : '';
-    var items = [];
-    var total = 0;
-    var totalQty = 0;
-    saleCart.forEach(function (c) {
-        var p = products.find(function (x) {
-            return x.id === c.id;
+    const deferred = getDeferred();
+    const products = getProducts();
+    const name = currentCustomer ? currentCustomer.name : '';
+    const phone = currentCustomer ? currentCustomer.phone || '' : '';
+    const items = [];
+    const total = 0;
+    const totalQty = 0;
+    saleCart.forEach(c => {
+        const p = products.find(x => x.id === c.id;
         });
         if (p)
             p.quantity -= c.qty;
-        var itemTotal = c.price * c.qty;
+        const itemTotal = c.price * c.qty;
         total += itemTotal;
         totalQty += c.qty;
         items.push({
@@ -682,7 +654,7 @@ function deferSale() {
             total: itemTotal
         });
     });
-    var defId = uid();
+    const defId = uid();
     deferred.push({
         id: defId,
         items: items,
@@ -697,22 +669,22 @@ function deferSale() {
         completedAt: null
     });
     setDeferred(deferred);
-    var docs = getDocuments();
+    const docs = getDocuments();
     docs.unshift({
         id: defId,
         type: 'deferred',
         docType: 'deferred',
-        items: items.map(function (it) {
-            return {
+        docNumber: 'DEF_' + Date.now(),
+        items: items.map(it => ({
                 productCode: it.productCode,
                 productName: it.productName,
                 quantity: it.quantity,
                 unitPrice: it.unitPrice,
                 total: it.total
-            };
-        }),
+            })),
         clientName: name,
         customerName: name,
+        customerPhone: (phone !== undefined && phone !== null) ? String(phone) : '',
         total: total,
         status: 'pending',
         date: new Date().toISOString(),
@@ -729,23 +701,20 @@ function deferSale() {
 function restoreDeferredSale(id) {
     if (!id)
         return;
-    var deferred = getDeferred();
-    var rec = deferred.find(function (d) {
-        return d.id === id;
+    const deferred = getDeferred();
+    const rec = deferred.find(d => d.id === id;
     });
     if (!rec) {
         toast('Запись не найдена', 'err');
         return;
     }
-    var products = getProducts();
-    rec.items.forEach(function (item) {
-        var p = products.find(function (x) {
-            return x.id === item.productId;
+    const products = getProducts();
+    rec.items.forEach(item => {
+        const p = products.find(x => x.id === item.productId;
         });
         if (p)
             p.quantity += item.quantity;
-        var existing = saleCart.find(function (c) {
-            return c.id === item.productId && c.receiptId === 'deferred';
+        const existing = saleCart.find(c => c.id === item.productId && c.receiptId === 'deferred';
         });
         if (existing)
             existing.qty += item.quantity;
@@ -761,8 +730,7 @@ function restoreDeferredSale(id) {
     });
     setProducts(products);
     deferred = deferred.map(function (d) {
-        if (d.id !== id)
-            return d;
+        if (d.id !== id) return d;
         return Object.assign({}, d, {
             status: 'in_cart',
             completedAt: new Date().toISOString()
@@ -770,10 +738,10 @@ function restoreDeferredSale(id) {
     });
     setDeferred(deferred);
     toast('Товары восстановлены в корзину', 'ok');
-    document.querySelectorAll('.nav-btn').forEach(function (b) {
+    document.querySelectorAll('.nav-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.page === 'sales');
     });
-    document.querySelectorAll('.page').forEach(function (p) {
+    document.querySelectorAll('.page').forEach(p => {
         p.classList.toggle('active', p.id === 'page-sales');
     });
     fillSaleProducts();
@@ -790,17 +758,15 @@ function deleteDeferred(id) {
     if (!id)
         return;
     confirmAction('Удалить', 'Удалить отложенную продажу из списка?', function () {
-        var deferred = getDeferred();
-        var rec = deferred.find(function (d) {
-            return d.id === id;
+        const deferred = getDeferred();
+        const rec = deferred.find(d => d.id === id;
         });
         if (!rec)
             return;
         if (rec.status === 'pending' || rec.status === 'awaiting_payment') {
-            var products = getProducts();
-            rec.items.forEach(function (item) {
-                var p = products.find(function (x) {
-                    return x.id === item.productId;
+            const products = getProducts();
+            rec.items.forEach(item => {
+                const p = products.find(x => x.id === item.productId;
                 });
                 if (p)
                     p.quantity += item.quantity;
@@ -808,9 +774,8 @@ function deleteDeferred(id) {
             setProducts(products);
         }
         if (rec.status === 'in_cart') {
-            rec.items.forEach(function (item) {
-                setSaleCart(saleCart.filter(function (c) {
-                    return c.id !== item.productId || c.receiptId !== 'deferred';
+            rec.items.forEach(item => {
+                setSaleCart(saleCart.filter(c => c.id !== item.productId || c.receiptId !== 'deferred';
                 }));
             });
             updateSaleTotal();
@@ -818,12 +783,11 @@ function deleteDeferred(id) {
         if (window.ApDb && typeof window.ApDb.deleteDeferred === 'function') {
             window.ApDb.deleteDeferred(id);
         } else {
-            setDeferred(deferred.filter(function (d) {
-                return d.id !== id;
+            setDeferred(deferred.filter(d => d.id !== id;
             }));
         }
-        var docs = getDocuments();
-        var docIdx = docs.findIndex(function (d) {
+        const docs = getDocuments();
+        const docIdx = docs.findIndex(function (d) {
             return d.id === id;
         });
         if (docIdx >= 0) {
@@ -842,9 +806,8 @@ function deleteDeferred(id) {
 function payDeferred(id) {
     if (!id)
         return;
-    var deferred = getDeferred();
-    var rec = deferred.find(function (d) {
-        return d.id === id;
+    const deferred = getDeferred();
+    const rec = deferred.find(d => d.id === id;
     });
     if (!rec) {
         toast('Запись не найдена', 'err');
@@ -855,19 +818,18 @@ function payDeferred(id) {
         return;
     }
     showPaymentMethodModal(function (paymentMethod) {
-        var shift = getOpenShiftForCashier(currentUser.id) || getOpenShiftForCashier(currentUser.username);
+        const shift = getOpenShiftForCashier(currentUser.id) || getOpenShiftForCashier(currentUser.username);
         if (!shift) {
             toast('Смена не открыта', 'err');
             goPage('myshift');
             return;
         }
-        var sales = getSales();
-        var products = getProducts();
-        var receiptId = uid();
-        var dateStr = new Date().toISOString();
-        rec.items.forEach(function (item) {
-            var p = products.find(function (x) {
-                return x.id === item.productId;
+        const sales = getSales();
+        const products = getProducts();
+        const receiptId = uid();
+        const dateStr = new Date().toISOString();
+        rec.items.forEach(item => {
+            const p = products.find(x => x.id === item.productId;
             });
             sales.push({
                 id: uid(),
@@ -890,14 +852,13 @@ function payDeferred(id) {
                 date: dateStr,
                 status: 'completed',
                 debtorName: rec.customerName || '',
-                debtPhone: rec.customerPhone || '',
+                debtPhone: (rec.customerPhone !== undefined && rec.customerPhone !== null) ? String(rec.customerPhone) : '',
                 debtReturnDate: ''
             });
         });
         setSales(sales);
         deferred = deferred.map(function (d) {
-            if (d.id !== id)
-                return d;
+            if (d.id !== id) return d;
             return Object.assign({}, d, {
                 status: 'completed',
                 paymentMethod: paymentMethod,
@@ -905,9 +866,8 @@ function payDeferred(id) {
             });
         });
         setDeferred(deferred);
-        var docs = getDocuments().map(function (d) {
-            if (d.id !== id)
-                return d;
+        const docs = getDocuments().map(function (d) {
+            if (d.id !== id) return d;
             return Object.assign({}, d, {
                 status: 'paid',
                 paymentMethod: paymentMethod
@@ -926,9 +886,8 @@ function payDeferred(id) {
 function cancelDeferredDoc(id) {
     if (!id)
         return;
-    var deferred = getDeferred();
-    var rec = deferred.find(function (d) {
-        return d.id === id;
+    const deferred = getDeferred();
+    const rec = deferred.find(d => d.id === id;
     });
     if (!rec) {
         toast('Запись не найдена', 'err');
@@ -938,28 +897,25 @@ function cancelDeferredDoc(id) {
         toast('Нельзя отменить оплаченный документ', 'err');
         return;
     }
-    var msg = rec.status === 'in_cart' ? 'Товары уже в корзине. Перенести обратно в отложенные? Склад не изменится.' : 'Перенести товары обратно в отложенные? Склад не изменится.';
+    const msg = rec.status === 'in_cart' ? 'Товары уже в корзине. Перенести обратно в отложенные? Склад не изменится.' : 'Перенести товары обратно в отложенные? Склад не изменится.';
     confirmAction('Отменить документ', msg, function () {
         if (rec.status === 'in_cart') {
-            rec.items.forEach(function (item) {
-                setSaleCart(saleCart.filter(function (c) {
-                    return c.id !== item.productId || c.receiptId !== 'deferred';
+            rec.items.forEach(item => {
+                setSaleCart(saleCart.filter(c => c.id !== item.productId || c.receiptId !== 'deferred';
                 }));
             });
             updateSaleTotal();
         }
         deferred = deferred.map(function (d) {
-            if (d.id !== id)
-                return d;
+            if (d.id !== id) return d;
             return Object.assign({}, d, {
                 status: 'pending',
                 paymentMethod: null
             });
         });
         setDeferred(deferred);
-        var docs = getDocuments().map(function (d) {
-            if (d.id !== id)
-                return d;
+        const docs = getDocuments().map(function (d) {
+            if (d.id !== id) return d;
             return Object.assign({}, d, {
                 status: 'cancelled',
                 paymentMethod: null
@@ -973,22 +929,20 @@ function cancelDeferredDoc(id) {
 }
 
 function renderDeferred() {
-    var deferred = getDeferred();
-    var search = (document.getElementById('deferred-search') || {}).value || '';
-    var filter = (document.getElementById('deferred-filter') || {}).value || 'all';
-    var searchLower = search.toLowerCase().trim();
-    var filtered = deferred.filter(function (d) {
-        if (filter !== 'all' && d.status !== filter)
-            return false;
+    const deferred = getDeferred();
+    const search = (document.getElementById('deferred-search') || {}).value || '';
+    const filter = (document.getElementById('deferred-filter') || {}).value || 'all';
+    const searchLower = search.toLowerCase().trim();
+    const filtered = deferred.filter(function (d) {
+        if (filter !== 'all' && d.status !== filter) return false;
         if (searchLower) {
-            var nameMatch = (d.customerName || '').toLowerCase().indexOf(searchLower) >= 0;
-            var phoneMatch = (d.customerPhone || '').toLowerCase().indexOf(searchLower) >= 0;
-            if (!nameMatch && !phoneMatch)
-                return false;
+            const nameMatch = (d.customerName || '').toLowerCase().indexOf(searchLower) >= 0;
+            const phoneMatch = (d.customerPhone || '').toLowerCase().indexOf(searchLower) >= 0;
+            if (!nameMatch && !phoneMatch) return false;
         }
         return true;
     });
-    var cols = [
+    const cols = [
         'Клиент',
         'Телефон',
         'Товары',
@@ -999,13 +953,12 @@ function renderDeferred() {
         'Оплата',
         ''
     ];
-    var rows = filtered.map(function (d) {
-        var statusBadge = d.status === 'pending' ? '<span class="badge badge-warn">В ожидании</span>' : d.status === 'awaiting_payment' ? '<span class="badge badge-info">Ожидает оплаты</span>' : d.status === 'completed' ? '<span class="badge badge-ok">Оплачен</span>' : d.status === 'in_cart' ? '<span class="badge badge-info">В корзине</span>' : '<span class="badge badge-danger">Отменён</span>';
-        var paymentLabel = d.paymentMethod ? d.paymentMethod === 'cash' ? '\uD83D\uDCB5 Наличные' : d.paymentMethod === 'kaspi' ? '\uD83D\uDCF1 Kaspi QR' : d.paymentMethod === 'transfer' ? '\uD83C\uDFE6 Банк' : d.paymentMethod : '\u2014';
-        var itemsHtml = (d.items || []).map(function (it) {
-            return '<div style="font-size:12px;padding:2px 0">' + esc(it.productName) + ' \xD7 ' + it.quantity + ' = ' + fmt(it.total) + '</div>';
+    const rows = filtered.map(function (d) {
+        const statusBadge = d.status === 'pending' ? '<span class="badge badge-warn">В ожидании</span>' : d.status === 'awaiting_payment' ? '<span class="badge badge-info">Ожидает оплаты</span>' : d.status === 'completed' ? '<span class="badge badge-ok">Оплачен</span>' : d.status === 'in_cart' ? '<span class="badge badge-info">В корзине</span>' : '<span class="badge badge-danger">Отменён</span>';
+        const paymentLabel = d.paymentMethod ? d.paymentMethod === 'cash' ? '\uD83D\uDCB5 Наличные' : d.paymentMethod === 'kaspi' ? '\uD83D\uDCF1 Kaspi QR' : d.paymentMethod === 'transfer' ? '\uD83C\uDFE6 Банк' : d.paymentMethod : '\u2014';
+        const itemsHtml = (d.items || []).map(it => '<div style="font-size:12px;padding:2px 0">' + esc(it.productName) + ' \xD7 ' + it.quantity + ' = ' + fmt(it.total) + '</div>';
         }).join('');
-        var actions = '<div class="actions" style="gap:4px">';
+        const actions = '<div class="actions" style="gap:4px">';
         if (d.status === 'pending' || d.status === 'awaiting_payment') {
             actions += '<button class="btn btn-success btn-sm" onclick="payDeferred(\'' + d.id + '\')" title="Оплатить">\uD83D\uDCB3 Оплатить</button>';
             actions += '<button class="btn btn-secondary btn-sm" onclick="cancelDeferredDoc(\'' + d.id + '\')" title="Отменить">\u2715 Отменить</button>';
@@ -1050,27 +1003,24 @@ function openDeferredModal() {
 }
 
 function searchDeferredProduct() {
-    var q = (document.getElementById('def-product-search').value || '').trim().toLowerCase();
-    var results = document.getElementById('def-search-results');
+    const q = (document.getElementById('def-product-search').value || '').trim().toLowerCase();
+    const results = document.getElementById('def-search-results');
     if (!q) {
         results.innerHTML = '';
         return;
     }
-    var products = getProducts().filter(function (p) {
-        return (p.name || '').toLowerCase().indexOf(q) >= 0 || (p.code || '').toLowerCase().indexOf(q) >= 0 || (p.barcode || '').indexOf(q) >= 0;
+    const products = getProducts().filter(p => (p.name || '').toLowerCase().indexOf(q) >= 0 || (p.code || '').toLowerCase().indexOf(q) >= 0 || (p.barcode || '').indexOf(q) >= 0;
     }).slice(0, 10);
     if (!products.length) {
         results.innerHTML = '<div style="padding:8px;color:var(--text-muted)">Ничего не найдено</div>';
         return;
     }
-    results.innerHTML = products.map(function (p) {
-        return '<div class="sale-result-item" onclick="selectDeferredProduct(\'' + p.id + '\')">' + '<strong>' + esc(p.name) + '</strong>' + (p.code ? ' <span class="code-tag">' + esc(p.code) + '</span>' : '') + ' <span style="color:var(--text-muted)">Остаток: ' + p.quantity + '</span></div>';
+    results.innerHTML = products.map(p => '<div class="sale-result-item" onclick="selectDeferredProduct(\'' + p.id + '\')">' + '<strong>' + esc(p.name) + '</strong>' + (p.code ? ' <span class="code-tag">' + esc(p.code) + '</span>' : '') + ' <span style="color:var(--text-muted)">Остаток: ' + p.quantity + '</span></div>';
     }).join('');
 }
 
 function selectDeferredProduct(id) {
-    var p = getProducts().find(function (x) {
-        return x.id === id;
+    const p = getProducts().find(x => x.id === id;
     });
     if (!p)
         return;
@@ -1084,17 +1034,17 @@ function selectDeferredProduct(id) {
 }
 
 function calcDeferredTotal() {
-    var qty = parseFloat(document.getElementById('def-qty').value) || 0;
-    var price = parseFloat(document.getElementById('def-price').value) || 0;
+    const qty = parseFloat(document.getElementById('def-qty').value) || 0;
+    const price = parseFloat(document.getElementById('def-price').value) || 0;
     document.getElementById('def-total').textContent = fmt(qty * price);
 }
 
 function saveDeferred() {
-    var productId = document.getElementById('def-product-id').value;
-    var qty = parseFloat(document.getElementById('def-qty').value) || 0;
-    var price = parseFloat(document.getElementById('def-price').value) || 0;
-    var customerName = document.getElementById('def-customer-name').value.trim();
-    var note = document.getElementById('def-note').value.trim();
+    const productId = document.getElementById('def-product-id').value;
+    const qty = parseFloat(document.getElementById('def-qty').value) || 0;
+    const price = parseFloat(document.getElementById('def-price').value) || 0;
+    const customerName = document.getElementById('def-customer-name').value.trim();
+    const note = document.getElementById('def-note').value.trim();
     if (!productId) {
         toast('Выберите товар', 'err');
         return;
@@ -1103,8 +1053,7 @@ function saveDeferred() {
         toast('Укажите количество', 'err');
         return;
     }
-    var p = getProducts().find(function (x) {
-        return x.id === productId;
+    const p = getProducts().find(x => x.id === productId;
     });
     if (!p) {
         toast('Товар не найден', 'err');
@@ -1114,10 +1063,10 @@ function saveDeferred() {
         toast('Недостаточно товара (остаток: ' + p.quantity + ')', 'err');
         return;
     }
-    var deferred = getDeferred();
-    var defId = uid();
+    const deferred = getDeferred();
+    const defId = uid();
     p.quantity -= qty;
-    var itemTotal = qty * price;
+    const itemTotal = qty * price;
     deferred.push({
         id: defId,
         items: [{
@@ -1139,7 +1088,7 @@ function saveDeferred() {
         completedAt: null
     });
     setDeferred(deferred);
-    var docs = getDocuments();
+    const docs = getDocuments();
     docs.unshift({
         id: defId,
         type: 'deferred',
@@ -1193,8 +1142,7 @@ function completeSale() {
         const c = saleCart[i];
         if (c.isUniversal)
             continue;
-        const p = products.find(function (x) {
-            return x.id === c.id;
+        const p = products.find(x => x.id === c.id;
         });
         if (!p || p.quantity < c.qty) {
             toast('Товар \xAB' + c.name + '\xBB недостаточно на складе', 'err');
@@ -1215,7 +1163,7 @@ function completeSale() {
         debtName = document.getElementById('debt-pay-name').value.trim();
         debtPhone = document.getElementById('debt-pay-phone').value.trim();
         debtDue = document.getElementById('debt-pay-due').value;
-        var debtNoteEl = document.getElementById('debt-pay-note');
+        const debtNoteEl = document.getElementById('debt-pay-note');
         debtNote = debtNoteEl ? debtNoteEl.value.trim() : '';
         if (!debtName) {
             toast('Введите имя должника', 'err');
@@ -1245,8 +1193,7 @@ function completeSale() {
             return;
         }
     }
-    let subTotal = saleCart.reduce(function (sum, c) {
-        return sum + c.price * c.qty;
+    let subTotal = saleCart.reduce(sum, c => sum + c.price * c.qty;
     }, 0);
     let bonusSpend = parseInt(document.getElementById('sale-bonus-spend').value) || 0;
     let earnedBonus = 0;
@@ -1274,9 +1221,8 @@ function completeSale() {
         }
     }
     const receiptId = uid();
-    saleCart.forEach(function (c) {
-        const p = products.find(function (x) {
-            return x.id === c.id;
+    saleCart.forEach(c => {
+        const p = products.find(x => x.id === c.id;
         });
         if (p)
             p.quantity -= c.qty;
@@ -1303,7 +1249,7 @@ function completeSale() {
             date: dateStr,
             status: 'completed',
             debtorName: currentPayment === 'debt' ? debtName : '',
-            debtPhone: currentPayment === 'debt' ? debtPhone : '',
+            debtPhone: currentPayment === 'debt' ? (debtPhone !== undefined && debtPhone !== null ? String(debtPhone) : '') : '',
             debtReturnDate: currentPayment === 'debt' ? debtDue : ''
         });
     });
@@ -1311,9 +1257,8 @@ function completeSale() {
     addAuditLog('Продажа завершена', 'Чек #' + receiptId.slice(-6) + ' на сумму ' + fmt(finalTotal) + ' \u20B8', '\uD83D\uDED2');
     setSales(sales);
     if (currentPayment === 'debt') {
-        var debtors = getDebtors();
-        var debtor = debtors.find(function (d) {
-            return d.name.toLowerCase() === debtName.toLowerCase() && d.phone === debtPhone;
+        const debtors = getDebtors();
+        const debtor = debtors.find(d => d.name.toLowerCase() === debtName.toLowerCase() && d.phone === debtPhone;
         });
         if (!debtor) {
             debtor = {
@@ -1325,19 +1270,16 @@ function completeSale() {
             debtors.push(debtor);
             setDebtors(debtors);
         }
-        var debts = getDebts();
+        const debts = getDebts();
         debts.push({
             id: uid(),
             debtorId: debtor.id,
             debtorName: debtName,
-            productCode: saleCart.map(function (c) {
-                return c.code || '';
+            productCode: saleCart.map(c => c.code || '';
             }).join(', '),
-            productName: saleCart.map(function (c) {
-                return c.name;
+            productName: saleCart.map(c => c.name;
             }).join(', '),
-            quantity: saleCart.reduce(function (s, c) {
-                return s + c.qty;
+            quantity: saleCart.reduce(s, c => s + c.qty;
             }, 0),
             amount: finalTotal,
             cashierName: currentUser.name,
@@ -1359,8 +1301,7 @@ function completeSale() {
 }
 
 function cancelSaleConfirm(saleId) {
-    const sale = getSales().find(function (s) {
-        return s.id === saleId;
+    const sale = getSales().find(s => s.id === saleId;
     });
     if (!sale || !isSaleActive(sale)) {
         toast('Продажа уже отменена', 'err');
@@ -1386,10 +1327,9 @@ function openReturnModalFromReceipt(receiptId) {
         toast('Чек не найден', 'err');
         return;
     }
-    var all = getSales().filter(isSaleActive);
-    var receipts = groupSalesIntoReceipts(all);
-    var r = receipts.find(function (x) {
-        return x.id === receiptId;
+    const all = getSales().filter(isSaleActive);
+    const receipts = groupSalesIntoReceipts(all);
+    const r = receipts.find(x => x.id === receiptId;
     });
     if (!r) {
         toast('Чек не найден', 'err');
@@ -1397,17 +1337,17 @@ function openReturnModalFromReceipt(receiptId) {
     }
     document.getElementById('return-sale-id').value = receiptId;
     document.getElementById('return-customer-id').value = r.customerId || '';
-    var meta = 'Чек \u2116 ' + receiptId.slice(-6) + ' от ' + fmtDate(r.date) + ' | Кассир: ' + (r.userName || '\u2014');
+    const meta = 'Чек \u2116 ' + receiptId.slice(-6) + ' от ' + fmtDate(r.date) + ' | Кассир: ' + (r.userName || '\u2014');
     document.getElementById('return-receipt-meta').textContent = meta;
-    var body = document.getElementById('return-items-body');
+    const body = document.getElementById('return-items-body');
     body.innerHTML = '';
-    var totalRefund = 0;
-    r.items.forEach(function (it) {
-        var qty = Number(it.quantity) || 0;
-        var price = Number(it.unitPrice) || 0;
-        var refundMax = price * qty;
+    const totalRefund = 0;
+    r.items.forEach(it => {
+        const qty = Number(it.quantity) || 0;
+        const price = Number(it.unitPrice) || 0;
+        const refundMax = price * qty;
         totalRefund += refundMax;
-        var tr = document.createElement('tr');
+        const tr = document.createElement('tr');
         tr.innerHTML = '<td>' + esc(it.productName) + '</td>' + '<td style="text-align:center">' + qty + '</td>' + '<td style="text-align:center"><input type="number" class="form-input" style="width:70px;padding:4px;text-align:center" min="0" max="' + qty + '" value="' + qty + '" data-price="' + price + '" data-max="' + refundMax + '" oninput="calcReturnTotal()"></td>' + '<td style="text-align:right;font-weight:600;color:var(--err)">' + fmt(refundMax) + '</td>';
         body.appendChild(tr);
     });
@@ -1420,12 +1360,12 @@ function exportSalesExcel() {
 }
 
 function exportSalesDetailedExcel() {
-    var receipts = groupSalesIntoReceipts(getSales().filter(isSaleActive));
-    var rows = [];
-    receipts.forEach(function (r) {
-        var pay = PAY_LABELS[r.payment] || r.payment || '';
+    const receipts = groupSalesIntoReceipts(getSales().filter(isSaleActive));
+    const rows = [];
+    receipts.forEach(r => {
+        const pay = PAY_LABELS[r.payment] || r.payment || '';
         if (r.payment === 'mixed') {
-            var parts = [];
+            const parts = [];
             if (Number(r.cashAmount) > 0)
                 parts.push('наличные: ' + Number(r.cashAmount));
             if (Number(r.kaspiAmount) > 0)
@@ -1435,7 +1375,7 @@ function exportSalesDetailedExcel() {
             if (parts.length)
                 pay = parts.join('; ');
         }
-        r.items.forEach(function (s, idx) {
+        r.items.forEach(s, idx => {
             rows.push([
                 r.id,
                 r.id.slice(-6),
@@ -1455,7 +1395,7 @@ function exportSalesDetailedExcel() {
             ]);
         });
     });
-    var headers = [
+    const headers = [
         'ID чека',
         'Номер чека',
         '\u2116 строки',
@@ -1472,7 +1412,7 @@ function exportSalesDetailedExcel() {
         'Телефон должника',
         'Дата возврата долга'
     ];
-    var widths = [
+    const widths = [
         24,
         12,
         10,
@@ -1502,10 +1442,10 @@ async function submitWriteOff() {
         toast('Нет прав на списание товара', 'err');
         return;
     }
-    var productId = document.getElementById('wo-product-id').value;
-    var qty = parseFloat(document.getElementById('wo-qty').value);
-    var reason = document.getElementById('wo-reason').value;
-    var note = document.getElementById('wo-note').value.trim();
+    const productId = document.getElementById('wo-product-id').value;
+    const qty = parseFloat(document.getElementById('wo-qty').value);
+    const reason = document.getElementById('wo-reason').value;
+    const note = document.getElementById('wo-note').value.trim();
     if (!productId) {
         toast('Выберите товар', 'err');
         return;
@@ -1518,8 +1458,7 @@ async function submitWriteOff() {
         toast('Укажите причину', 'err');
         return;
     }
-    var p = getProducts().find(function (x) {
-        return x.id === productId;
+    const p = getProducts().find(x => x.id === productId;
     });
     if (!p) {
         toast('Товар не найден', 'err');
@@ -1557,15 +1496,14 @@ function startAuditSession() {
         toast('Нет прав на инвентаризацию', 'err');
         return;
     }
-    var products = getProducts();
+    const products = getProducts();
     if (!products.length) {
         toast('Нет товаров для ревизии', 'err');
         return;
     }
     setAuditSession({
         active: true,
-        items: products.map(function (p) {
-            return {
+        items: products.map(p => {
                 productId: p.id,
                 code: p.code || '',
                 name: p.name,
@@ -1590,20 +1528,19 @@ function cancelAuditSession() {
 function renderAuditSessionTable() {
     if (!_auditSession || !_auditSession.active)
         return;
-    var body = document.getElementById('audit-session-body');
+    const body = document.getElementById('audit-session-body');
     if (!body)
         return;
-    var filter = (document.getElementById('audit-search').value || '').trim().toLowerCase();
-    var items = _auditSession.items.filter(function (it) {
-        if (!filter)
-            return true;
+    const filter = (document.getElementById('audit-search').value || '').trim().toLowerCase();
+    const items = _auditSession.items.filter(function (it) {
+        if (!filter) return true;
         return it.name.toLowerCase().indexOf(filter) >= 0 || it.code.toLowerCase().indexOf(filter) >= 0;
     });
     body.innerHTML = items.map(function (it, idx) {
-        var realIdx = _auditSession.items.indexOf(it);
-        var diff = it.qtyFact - it.qtySystem;
-        var diffColor = diff === 0 ? 'var(--muted)' : diff > 0 ? 'var(--ok)' : 'var(--err)';
-        var diffText = diff > 0 ? '+' + diff : diff;
+        const realIdx = _auditSession.items.indexOf(it);
+        const diff = it.qtyFact - it.qtySystem;
+        const diffColor = diff === 0 ? 'var(--muted)' : diff > 0 ? 'var(--ok)' : 'var(--err)';
+        const diffText = diff > 0 ? '+' + diff : diff;
         return '<tr>' + '<td><span class="code-tag">' + it.code + '</span></td>' + '<td>' + it.name + '</td>' + '<td style="text-align:center">' + it.qtySystem + '</td>' + '<td style="text-align:center"><input type="number" min="0" step="any" value="' + it.qtyFact + '" ' + 'style="width:80px;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);text-align:center" ' + 'onchange="updateAuditQty(' + realIdx + ', this.value)"></td>' + '<td style="text-align:center;color:' + diffColor + ';font-weight:600">' + diffText + '</td>' + '</tr>';
     }).join('');
 }
@@ -1611,16 +1548,14 @@ function renderAuditSessionTable() {
 function completeAuditSession() {
     if (!_auditSession || !_auditSession.active)
         return;
-    var diffs = _auditSession.items.filter(function (it) {
-        return it.qtyFact !== it.qtySystem;
+    const diffs = _auditSession.items.filter(it => it.qtyFact !== it.qtySystem;
     });
-    var msg = diffs.length ? 'Обнаружены расхождения по ' + diffs.length + ' позициям. Завершить ревизию и обновить остатки?' : 'Расхождений не обнаружено. Завершить ревизию?';
+    const msg = diffs.length ? 'Обнаружены расхождения по ' + diffs.length + ' позициям. Завершить ревизию и обновить остатки?' : 'Расхождений не обнаружено. Завершить ревизию?';
     confirmAction('Завершить ревизию', msg, async function () {
         try {
-            var payload = {
+            const payload = {
                 userName: currentUser.name,
-                items: _auditSession.items.map(function (it) {
-                    return {
+                items: _auditSession.items.map(it => {
                         productId: it.productId,
                         code: it.code,
                         name: it.name,
@@ -1643,10 +1578,10 @@ function completeAuditSession() {
 }
 
 function printReceipt() {
-    var el = document.getElementById('receipt-print-area');
+    const el = document.getElementById('receipt-print-area');
     if (!el)
         return;
-    var printWin = window.open('', '', 'height=600,width=400');
+    const printWin = window.open('', '', 'height=600,width=400');
     if (!printWin) {
         toast('Разрешите всплывающее окно для печати чека', 'err');
         return;
@@ -1663,8 +1598,7 @@ function printReceipt() {
 function openReceipt(receiptId) {
     const all = getSales().filter(isSaleActive);
     const receipts = groupSalesIntoReceipts(all);
-    const r = receipts.find(function (x) {
-        return x.id === receiptId;
+    const r = receipts.find(x => x.id === receiptId;
     });
     if (!r) {
         toast('Чек не найден', 'err');
@@ -1672,19 +1606,19 @@ function openReceipt(receiptId) {
     }
     window._currentReceiptId = receiptId;
     document.getElementById('receipt-title').textContent = 'Чек \u2116 ' + receiptId.slice(-6);
-    var store = window.ApAuth && window.ApAuth.getCurrentStore();
-    var storeName = store ? store.storeName : 'SANAQ';
-    var bin = localStorage.getItem('ap_store_bin') || '';
-    var dateStr = r.date ? new Date(r.date).toLocaleString('ru-RU', {
+    const store = window.ApAuth && window.ApAuth.getCurrentStore();
+    const storeName = store ? store.storeName : 'SANAQ';
+    const bin = localStorage.getItem('ap_store_bin') || '';
+    const dateStr = r.date ? new Date(r.date).toLocaleString('ru-RU', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
     }) : '\u2014';
-    var payDetail = PAY_LABELS[r.payment] || r.payment || '\u2014';
+    const payDetail = PAY_LABELS[r.payment] || r.payment || '\u2014';
     if (r.payment === 'mixed') {
-        var pts = [];
+        const pts = [];
         if (Number(r.cashAmount) > 0)
             pts.push('нал:' + fmtShort(r.cashAmount));
         if (Number(r.kaspiAmount) > 0)
@@ -1694,27 +1628,26 @@ function openReceipt(receiptId) {
         if (pts.length)
             payDetail = pts.join(' ');
     }
-    var h = escapeHtml;
-    var custName = '';
+    const h = escapeHtml;
+    const custName = '';
     if (r.customerId) {
-        var cust = getCustomers().find(function (c) {
-            return c.id === r.customerId;
+        const cust = getCustomers().find(c => c.id === r.customerId;
         });
         if (cust)
             custName = cust.name || '';
     }
-    var header = '<div class="receipt-center receipt-bold">' + h(storeName) + '</div>' + (bin ? '<div class="receipt-center">БИН/ИИН ' + h(bin) + '</div>' : '') + '<div class="receipt-center">КАССОВЫЙ ЧЕК</div>' + '<div class="receipt-row"><span>Чек \u2116</span><span>' + receiptId.slice(-6) + '</span></div>' + '<div class="receipt-row"><span>Дата</span><span>' + dateStr + '</span></div>' + '<div class="receipt-row"><span>Кассир</span><span>' + h(r.userName || '\u2014') + '</span></div>' + (custName ? '<div class="receipt-row"><span>Клиент</span><span>' + h(custName) + '</span></div>' : '') + '<div class="receipt-sep"></div>';
-    var itemsHtml = '';
-    r.items.forEach(function (it) {
-        var name = it.productName || '\u2014';
-        var qty = Number(it.quantity) || 0;
-        var price = Number(it.unitPrice) || 0;
-        var total = Number(it.total) || 0;
+    const header = '<div class="receipt-center receipt-bold">' + h(storeName) + '</div>' + (bin ? '<div class="receipt-center">БИН/ИИН ' + h(bin) + '</div>' : '') + '<div class="receipt-center">КАССОВЫЙ ЧЕК</div>' + '<div class="receipt-row"><span>Чек \u2116</span><span>' + receiptId.slice(-6) + '</span></div>' + '<div class="receipt-row"><span>Дата</span><span>' + dateStr + '</span></div>' + '<div class="receipt-row"><span>Кассир</span><span>' + h(r.userName || '\u2014') + '</span></div>' + (custName ? '<div class="receipt-row"><span>Клиент</span><span>' + h(custName) + '</span></div>' : '') + '<div class="receipt-sep"></div>';
+    const itemsHtml = '';
+    r.items.forEach(it => {
+        const name = it.productName || '\u2014';
+        const qty = Number(it.quantity) || 0;
+        const price = Number(it.unitPrice) || 0;
+        const total = Number(it.total) || 0;
         itemsHtml += '<div class="receipt-item">' + '<div class="receipt-name">' + h(name) + '</div>' + '<div class="receipt-row"><span>' + qty + ' x ' + fmtShort(price) + '</span><span>' + fmtShort(total) + '</span></div>' + (it.productCode ? '<div style="font-size:11px">Код: ' + h(it.productCode) + '</div>' : '') + '</div>';
     });
     itemsHtml += '<div class="receipt-sep"></div>';
-    var totalsHtml = '';
-    var netTotal = r.total - (Number(r.discountAmount) || 0) - (Number(r.bonusSpend) || 0);
+    const totalsHtml = '';
+    const netTotal = r.total - (Number(r.discountAmount) || 0) - (Number(r.bonusSpend) || 0);
     totalsHtml += '<div class="receipt-row receipt-total"><span>ИТОГО</span><span>' + fmtShort(netTotal) + '</span></div>';
     if (Number(r.discountAmount) > 0)
         totalsHtml += '<div class="receipt-row"><span>Скидка</span><span>-' + fmtShort(r.discountAmount) + '</span></div>';
@@ -1739,15 +1672,14 @@ function openReceipt(receiptId) {
     if (Number(r.earnedBonus) > 0)
         totalsHtml += '<div class="receipt-row"><span>Бонусы начислено</span><span>+' + fmtShort(r.earnedBonus) + '</span></div>';
     totalsHtml += '<div class="receipt-sep"></div>';
-    var footer = '<div class="receipt-center receipt-bold">СПАСИБО ЗА ПОКУПКУ!</div>';
+    const footer = '<div class="receipt-center receipt-bold">СПАСИБО ЗА ПОКУПКУ!</div>';
     document.getElementById('receipt-header').innerHTML = header;
     document.getElementById('receipt-items').innerHTML = itemsHtml;
     document.getElementById('receipt-totals').innerHTML = totalsHtml;
     document.getElementById('receipt-footer').innerHTML = footer;
-    var returnBtn = document.getElementById('btn-receipt-return');
+    const returnBtn = document.getElementById('btn-receipt-return');
     if (returnBtn) {
-        var returnable = r.items.some(function (it) {
-            return Number(it.quantity) > 0;
+        const returnable = r.items.some(it => Number(it.quantity) > 0;
         });
         returnBtn.style.display = returnable ? 'inline-flex' : 'none';
     }
@@ -1755,15 +1687,14 @@ function openReceipt(receiptId) {
 }
 
 function migrateDeferredData() {
-    var migrationKey = 'ap_deferred_migration_v1';
+    const migrationKey = 'ap_deferred_migration_v1';
     if (localStorage.getItem(migrationKey))
         return;
     try {
-        var deferred = getDeferred();
-        var changed = false;
-        var migrated = deferred.map(function (d) {
-            if (d.items)
-                return d;
+        const deferred = getDeferred();
+        const changed = false;
+        const migrated = deferred.map(function (d) {
+            if (d.items) return d;
             changed = true;
             return {
                 id: d.id,
@@ -1796,9 +1727,8 @@ function migrateDeferredData() {
 }
 
 function getAuditLog() {
-    var v = window.ApDb && window.ApDb.getAppData ? window.ApDb.getAppData('audit_log') : null;
-    if (v !== null && v !== undefined)
-        return Array.isArray(v) ? v : [];
+    const v = window.ApDb && window.ApDb.getAppData ? window.ApDb.getAppData('audit_log') : null;
+    if (v !== null && v !== undefined) return Array.isArray(v) ? v : [];
     try {
         return JSON.parse(localStorage.getItem('sanaq_audit_log') || '[]');
     } catch (e) {
@@ -1816,7 +1746,7 @@ function setAuditLog(arr) {
 }
 
 function addAuditLog(action, detail, icon) {
-    var log = getAuditLog();
+    const log = getAuditLog();
     log.unshift({
         id: uid(),
         action: action,
@@ -1832,19 +1762,16 @@ function addAuditLog(action, detail, icon) {
 }
 
 function openAuditLog() {
-    var container = document.getElementById('audit-log-body');
-    var log = getAuditLog();
+    const container = document.getElementById('audit-log-body');
+    const log = getAuditLog();
     if (!log.length) {
         container.innerHTML = '<div class="empty">Журнал действий пуст</div>';
     } else {
-        container.innerHTML = log.map(function (entry) {
-            return '<div class="audit-item"><div class="audit-item-icon">' + (entry.icon || '\uD83D\uDCDD') + '</div><div class="audit-item-content"><div class="audit-item-action">' + esc(entry.action) + '</div><div class="audit-item-detail">' + esc(entry.detail || '') + ' \u2014 ' + esc(entry.user || '') + '</div><div class="audit-item-time">' + fmtDate(entry.time) + '</div></div></div>';
+        container.innerHTML = log.map(entry => '<div class="audit-item"><div class="audit-item-icon">' + (entry.icon || '\uD83D\uDCDD') + '</div><div class="audit-item-content"><div class="audit-item-action">' + esc(entry.action) + '</div><div class="audit-item-detail">' + esc(entry.detail || '') + ' \u2014 ' + esc(entry.user || '') + '</div><div class="audit-item-time">' + fmtDate(entry.time) + '</div></div></div>';
         }).join('');
     }
     openModal('modal-audit-log');
 }
-
-
 
 set('isSaleActive', isSaleActive);
 set('togglePaymentSection', togglePaymentSection);

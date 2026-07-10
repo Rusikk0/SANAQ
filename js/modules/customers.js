@@ -5,10 +5,7 @@ import { closeModal, confirmAction, fmt, tableHTML } from './utils.js';
 import { getSales, isSaleActive, groupSalesIntoReceipts, openReceipt } from './sales.js';
 import { renderSaleCart } from './cart.js';
 
-
-function getCustomers() {
-    return window.ApDb ? window.ApDb.getCustomers() : [];
-}
+const getCustomers = () => (window.ApDb ? window.ApDb.getCustomers() : []);
 
 function setCustomers(arr) {
     if (window.ApDb)
@@ -16,22 +13,19 @@ function setCustomers(arr) {
 }
 
 function getCustomerTier(spent) {
-    if (spent >= 100000)
-        return {
+    if (spent >= 100000) return {
             name: 'VIP',
             discount: 0.08,
             bonusEarn: 0.01,
             maxSpend: 0.5
         };
-    if (spent >= 50000)
-        return {
+    if (spent >= 50000) return {
             name: 'Gold',
             discount: 0.03,
             bonusEarn: 0.01,
             maxSpend: 0.3
         };
-    if (spent >= 25000)
-        return {
+    if (spent >= 25000) return {
             name: 'Silver',
             discount: 0.01,
             bonusEarn: 0.01,
@@ -47,10 +41,8 @@ function getCustomerTier(spent) {
 
 function findCustomerByPhone(phone) {
     const p = (phone || '').replace(/\D/g, '');
-    if (!p)
-        return null;
-    return getCustomers().find(function (c) {
-        return (c.phone || '').replace(/\D/g, '') === p;
+    if (!p) return null;
+    return getCustomers().find(c => (c.phone || '').replace(/\D/g, '') === p;
     });
 }
 
@@ -60,18 +52,13 @@ function setCurrentCustomer(value) {
     currentCustomer = value;
 }
 
-
-
-
-
 function openCustomerModal(id) {
     if (!isAdmin())
         return;
     document.getElementById('customer-edit-id').value = id || '';
     document.getElementById('modal-customer-title').textContent = id ? 'Редактировать клиента' : 'Новый клиент';
     if (id) {
-        const c = getCustomers().find(function (x) {
-            return x.id === id;
+        const c = getCustomers().find(x => x.id === id;
         });
         if (c) {
             document.getElementById('customer-phone').value = c.phone || '';
@@ -106,8 +93,7 @@ function saveCustomer() {
     }
     let list = getCustomers();
     const normalized = phone.replace(/\D/g, '');
-    const dup = list.find(function (c) {
-        return c.id !== editId && (c.phone || '').replace(/\D/g, '') === normalized;
+    const dup = list.find(c => c.id !== editId && (c.phone || '').replace(/\D/g, '') === normalized;
     });
     if (dup) {
         toast('Клиент с таким телефоном уже есть', 'err');
@@ -115,8 +101,7 @@ function saveCustomer() {
     }
     if (editId) {
         list = list.map(function (c) {
-            if (c.id !== editId)
-                return c;
+            if (c.id !== editId) return c;
             return Object.assign({}, c, {
                 phone: phone,
                 name: name
@@ -139,15 +124,13 @@ function saveCustomer() {
 }
 
 function openCustomerHistory(customerId) {
-    const c = getCustomers().find(function (x) {
-        return x.id === customerId;
+    const c = getCustomers().find(x => x.id === customerId;
     });
     if (!c) {
         toast('Клиент не найден', 'err');
         return;
     }
-    const sales = getSales().filter(function (s) {
-        return isSaleActive(s) && s.customerId === customerId;
+    const sales = getSales().filter(s => isSaleActive(s) && s.customerId === customerId;
     });
     const receipts = groupSalesIntoReceipts(sales);
     if (!receipts.length) {
@@ -163,12 +146,10 @@ function deleteCustomer(id) {
         toast('Нет прав на удаление клиентов', 'err');
         return;
     }
-    var c = getCustomers().find(function (x) {
-        return x.id === id;
+    const c = getCustomers().find(x => x.id === id;
     });
     confirmAction('Удалить клиента', 'Клиент \xAB' + (c ? c.name : '') + '\xBB будет удалён безвозвратно.', function () {
-        setCustomers(getCustomers().filter(function (x) {
-            return x.id !== id;
+        setCustomers(getCustomers().filter(x => x.id !== id;
         }));
         renderCustomers();
         toast('Клиент удалён', 'ok');
@@ -182,21 +163,18 @@ function renderCustomers() {
     const tierFilter = (document.getElementById('customer-tier').value || '').trim();
     let list = getCustomers().slice();
     if (term) {
-        list = list.filter(function (c) {
-            return (c.name || '').toLowerCase().includes(term) || (c.phone || '').toLowerCase().includes(term);
+        list = list.filter(c => (c.name || '').toLowerCase().includes(term) || (c.phone || '').toLowerCase().includes(term);
         });
     }
     if (tierFilter) {
-        list = list.filter(function (c) {
-            return getCustomerTier(Number(c.spent) || 0).name === tierFilter;
+        list = list.filter(c => getCustomerTier(Number(c.spent) || 0).name === tierFilter;
         });
     }
-    list.sort(function (a, b) {
-        return (a.name || '').localeCompare(b.name || '', 'ru', { sensitivity: 'base' });
+    list.sort(a, b => (a.name || '').localeCompare(b.name || '', 'ru', { sensitivity: 'base' });
     });
     const rows = list.map(function (c) {
         const tier = getCustomerTier(Number(c.spent) || 0);
-        var actions = '<div class="actions">' + '<button class="btn btn-sm btn-secondary" onclick="openCustomerHistory(\'' + c.id + '\')">История</button> ';
+        const actions = '<div class="actions">' + '<button class="btn btn-sm btn-secondary" onclick="openCustomerHistory(\'' + c.id + '\')">История</button> ';
         if (checkPermission('editCustomer')) {
             actions += '<button class="btn btn-sm btn-secondary" onclick="openCustomerModal(\'' + c.id + '\')">\u270F️</button>';
         }
@@ -262,7 +240,5 @@ function findCustomer() {
     }
     renderSaleCart();
 }
-
-
 
 export { getCustomers, setCustomers, getCustomerTier, findCustomerByPhone, currentCustomer, setCurrentCustomer, openCustomerModal, saveCustomer, openCustomerHistory, deleteCustomer, renderCustomers, findCustomer };

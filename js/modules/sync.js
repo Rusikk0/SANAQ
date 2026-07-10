@@ -10,8 +10,6 @@ import { getShifts } from './shifts.js';
 import { getCustomers, setCustomers } from './customers.js';
 import { getDebtors, getDebts, setDebtors, setDebts } from './debts.js';
 
-
-
 async function syncWithSupabase() {
     if (!currentUser || !window.ApDb)
         return;
@@ -23,7 +21,7 @@ async function syncWithSupabase() {
     }
 }
 
-var _postSaveSyncTimer = null;
+const _postSaveSyncTimer = null;
 
 function _schedulePostSaveSync() {
     if (_postSaveSyncTimer)
@@ -36,32 +34,29 @@ function _schedulePostSaveSync() {
     }, 4000);
 }
 
-
-
-
 function syncFromPurchase() {
-    var purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
-    var markup = parseFloat(document.getElementById('product-markup').value) || 0;
+    const purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
+    const markup = parseFloat(document.getElementById('product-markup').value) || 0;
     if (purchase > 0 && markup > 0) {
-        var price = purchase * (1 + markup / 100);
+        const price = purchase * (1 + markup / 100);
         document.getElementById('product-price').value = price.toFixed(2);
     }
 }
 
 function syncFromMarkup() {
-    var purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
-    var markup = parseFloat(document.getElementById('product-markup').value) || 0;
+    const purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
+    const markup = parseFloat(document.getElementById('product-markup').value) || 0;
     if (purchase > 0 && markup >= 0) {
-        var price = purchase * (1 + markup / 100);
+        const price = purchase * (1 + markup / 100);
         document.getElementById('product-price').value = price.toFixed(2);
     }
 }
 
 function syncFromPrice() {
-    var purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
-    var price = parseFloat(document.getElementById('product-price').value) || 0;
+    const purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
+    const price = parseFloat(document.getElementById('product-price').value) || 0;
     if (purchase > 0 && price >= purchase) {
-        var markup = (price - purchase) / purchase * 100;
+        const markup = (price - purchase) / purchase * 100;
         document.getElementById('product-markup').value = markup.toFixed(2);
     } else if (purchase > 0) {
         document.getElementById('product-markup').value = '0';
@@ -73,13 +68,13 @@ function importStoreBackup() {
         toast('Только администратор', 'err');
         return;
     }
-    var input = document.getElementById('backup-import-file');
-    var file = input && input.files && input.files[0];
+    const input = document.getElementById('backup-import-file');
+    const file = input && input.files && input.files[0];
     if (!file) {
         toast('Выберите файл .json', 'err');
         return;
     }
-    var replace = document.getElementById('backup-replace-all') && document.getElementById('backup-replace-all').checked;
+    const replace = document.getElementById('backup-replace-all') && document.getElementById('backup-replace-all').checked;
     confirmAction('Восстановить из копии?', replace ? 'Все текущие данные магазина будут заменены содержимым файла. Продолжить?' : 'Данные из файла будут загружены. Рекомендуется включить \xABЗаменить всё\xBB для полного восстановления.', async function () {
         try {
             await window.ApBackup.importBackup(file, replace);
@@ -90,12 +85,12 @@ function importStoreBackup() {
     });
 }
 
-var autoBackupKey = 'ap_auto_backup_ts';
+const autoBackupKey = 'ap_auto_backup_ts';
 
 function autoBackup() {
     try {
-        var store = getCurrentStoreName();
-        var data = {
+        const store = getCurrentStoreName();
+        const data = {
             ts: Date.now(),
             products: getProducts(),
             categories: getCategories(),
@@ -118,12 +113,12 @@ function autoBackup() {
 
 function restoreAutoBackup() {
     try {
-        var store = getCurrentStoreName();
-        var raw = localStorage.getItem('ap_auto_backup_' + store);
+        const store = getCurrentStoreName();
+        const raw = localStorage.getItem('ap_auto_backup_' + store);
         if (!raw)
             return;
-        var data = JSON.parse(raw);
-        var age = Date.now() - (data.ts || 0);
+        const data = JSON.parse(raw);
+        const age = Date.now() - (data.ts || 0);
         if (age > 86400000) {
             localStorage.removeItem('ap_auto_backup_' + store);
             return;
@@ -145,7 +140,5 @@ function restoreAutoBackup() {
     } catch (e) {
     }
 }
-
-
 
 export { syncWithSupabase, _postSaveSyncTimer, _schedulePostSaveSync, syncFromPurchase, syncFromMarkup, syncFromPrice, importStoreBackup, autoBackupKey, autoBackup, restoreAutoBackup };
