@@ -208,9 +208,9 @@
       sale_date: r.date || new Date().toISOString(),
       cancelled_at: r.cancelledAt || null,
       cancelled_by: r.cancelledBy || null,
-      debt_phone: (r.debtPhone !== undefined && r.debtPhone !== null) ? String(r.debtPhone) : '',
+      debt_phone: (r.debtPhone !== undefined && r.debtPhone !== null && r.debtPhone !== '') ? String(r.debtPhone) : '',
       debt_return_date: r.debtReturnDate || null,
-      debtor_name: r.debtorName || '',
+      debtor_name: (r.debtorName !== undefined && r.debtorName !== null) ? String(r.debtorName) : '',
       updated_at: new Date().toISOString()
     };
     var p = c.from('sales').upsert(saleRow, { onConflict: 'id' }).then(function (res) {
@@ -945,14 +945,18 @@
   function deferredToRow(d, sId) {
     var items = d.items || [{ productId: d.productId, productCode: d.productCode, productName: d.productName, quantity: d.quantity, unitPrice: d.unitPrice, total: d.total }];
     return items.map(function (item, idx) {
+      var baseId = d.id || ('DEF_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
       return {
-        id: item.id || (d.id + '_' + idx) || undefined, store_id: sId,
-        customer_name: d.customerName || '', customer_phone: d.customerPhone || '',
+        id: item.id || (baseId + '_' + idx), store_id: sId,
+        customer_name: (d.customerName !== undefined && d.customerName !== null) ? String(d.customerName) : '',
+        customer_phone: (d.customerPhone !== undefined && d.customerPhone !== null) ? String(d.customerPhone) : '',
         product_id: item.productId || null, product_code: item.productCode || '',
         product_name: item.productName || '', quantity: item.quantity || 1,
         unit_price: item.unitPrice || 0, total: item.total || 0,
-        cashier_name: d.cashierName || '', status: d.status || 'pending',
-        note: d.note || '', updated_at: new Date().toISOString(),
+        cashier_name: (d.cashierName !== undefined && d.cashierName !== null) ? String(d.cashierName) : '',
+        status: d.status || 'pending',
+        note: (d.note !== undefined && d.note !== null) ? String(d.note) : '',
+        updated_at: new Date().toISOString(),
         completed_at: d.completedAt || null
       };
     });
@@ -983,13 +987,13 @@
     return {
       id: doc.id || undefined, store_id: sId,
       doc_type: doc.docType || doc.type || '',
-      doc_number: doc.docNumber || undefined,
+      doc_number: doc.docNumber || ('DOC_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6)),
       status: doc.status || 'pending',
-      customer_name: doc.customerName || '',
-      customer_phone: doc.customerPhone || '',
+      customer_name: (doc.customerName !== undefined && doc.customerName !== null) ? String(doc.customerName) : '',
+      customer_phone: (doc.customerPhone !== undefined && doc.customerPhone !== null) ? String(doc.customerPhone) : '',
       total: doc.total || 0,
       created_by: doc.createdBy || null,
-      created_by_name: doc.createdByName || '',
+      created_by_name: (doc.createdByName !== undefined && doc.createdByName !== null) ? String(doc.createdByName) : '',
       document_date: doc.documentDate || new Date().toISOString(),
       meta: doc.meta || {},
       updated_at: new Date().toISOString()
