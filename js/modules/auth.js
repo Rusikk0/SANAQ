@@ -25,13 +25,13 @@ async function showLogin() {
     document.getElementById('login-screen').style.display = 'flex';
 }
 
-const _adminPinCallback = null;
+let _adminPinCallback = null;
 
 function setAdminPinCallback(value) {
     _adminPinCallback = value;
 }
 
-const _auditSession = null;
+let _auditSession = null;
 
 function setAuditSession(value) {
     _auditSession = value;
