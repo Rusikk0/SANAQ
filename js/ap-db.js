@@ -35,22 +35,11 @@
   var offlineQueue = [];
   var isOnline = true;
   var isProcessingQueue = false;
-  var _suppressSync = false;
-  var _lastLocalWrite = {};
+  var _suppressSync = false; // true during loadAll/queue replay — prevents feedback loops
+  var _lastLocalWrite = {}; // per-table timestamp of last local write, to skip self-triggered Realtime events
   var _realtimeChannel = null;
   var _refreshDebounceTimer = null;
   var TABLES_TO_WATCH = ['products','categories','customers','shifts','expenses','sales','sale_items','store_members','loyalty_cards','write_offs','audits','returns','debtors','debts','deferred_items','documents','document_items','app_data'];
-  
-  // Приоритеты операций для очереди
-  var OP_PRIORITY = {
-    'createSale': 1, 'createWriteOff': 2, 'createAudit': 3, 'createReturn': 4,
-    'deleteProduct': 5, 'deleteDocument': 5, 'deleteDeferred': 5, 'deleteDebt': 5, 'deleteDebtor': 5,
-    'upsert_products': 10, 'upsert_categories': 10, 'upsert_customers': 10, 'upsert_shifts': 10, 'upsert_expenses': 10
-  };
-  
-  // Экспоненциальная задержка: baseDelay * 2^retries (max 5 мин)
-  var BASE_RETRY_DELAY_MS = 2000;
-  var MAX_RETRY_DELAY_MS = 300000;
 
   function setupRealtime() {
     var c = sb();
@@ -103,13 +92,7 @@
   }
 
   function pushToQueue(op) {
-    var priority = OP_PRIORITY[op.type] || 99;
-    offlineQueue.push({ ts: Date.now(), op: op, retries: 0, priority: priority });
-    // Сортировка очереди по приоритету и времени
-    offlineQueue.sort(function(a, b) {
-      if (a.priority !== b.priority) return a.priority - b.priority;
-      return a.ts - b.ts;
-    });
+    offlineQueue.push({ ts: Date.now(), op: op, retries: 0 });
     saveOfflineQueue();
     updateOnlineUI();
   }
@@ -159,8 +142,6 @@
     if (!c || !sId) { pushToQueue({ type: 'upsert_' + table, payload: items.slice() }); return; }
     var rows = _toRows(items, toRow, sId);
     if (!rows.length) return;
-    
-    // Убираем columns для upsert, чтобы Supabase сам определил колонки
     c.from(table).upsert(rows, { onConflict: 'id' })
       .then(function (res) {
         if (res.error) throw res.error;
@@ -181,11 +162,7 @@
     if (!c || !sId) return Promise.resolve();
     var rows = _toRows(items, toRow, sId);
     if (!rows.length) return Promise.resolve();
-    
-    // Убираем columns для upsert, чтобы Supabase сам определил колонки
-    return c.from(table).upsert(rows, { 
-      onConflict: 'id'
-    }).then(function (res) {
+    return c.from(table).upsert(rows, { onConflict: 'id' }).then(function (res) {
       if (res.error) throw res.error;
     });
   }
@@ -194,7 +171,13 @@
     var c = sb();
     var sId = sid();
     if (!c || !sId) return Promise.resolve();
-    var receipts = groupSalesIntoReceipts(items);
+    // Группируем продажи в чеки (функция из sales.js доступна через global)
+    var groupFn = (global.groupSalesIntoReceipts || (global.ApDb && global.ApDb.groupSalesIntoReceipts));
+    if (!groupFn) {
+      console.warn('[ApDb] groupSalesIntoReceipts not found, skipping upsert sales');
+      return Promise.resolve();
+    }
+    var receipts = groupFn(items);
     var chain = Promise.resolve();
     receipts.forEach(function (r) {
       chain = chain.then(function () {
@@ -505,21 +488,15 @@
       var succeeded = [];
       for (var i = 0; i < offlineQueue.length; i++) {
         var item = offlineQueue[i];
-        // Экспоненциальная задержка для повторных попыток
-        if (item.retries > 0) {
-          var delay = Math.min(BASE_RETRY_DELAY_MS * Math.pow(2, item.retries - 1), MAX_RETRY_DELAY_MS);
-          var age = Date.now() - item.ts;
-          if (age < delay) continue; // Пропускаем если еще не время для retry
-        }
         try {
           await replayOp(c, id, item.op);
           succeeded.push(i);
         } catch (err) {
-          console.error('[ApDb] Queue replay error:', err.message || err, 'Type:', item.op.type);
+          console.error('[ApDb] Queue replay error:', err);
           item.retries = (item.retries || 0) + 1;
-          if (item.retries % 10 === 0) {
+          if (item.retries % 50 === 0) {
             console.warn('[ApDb] Queue item stuck after ' + item.retries + ' retries:', item.op.type);
-            if (global.toast) global.toast('Ошибка синхронизации (' + item.retries + '): ' + item.op.type, 'err');
+            if (global.toast) global.toast('Ошибка синхронизации (' + item.retries + ' попыток): ' + item.op.type, 'err');
           }
         }
       }
@@ -539,6 +516,7 @@
       try { await loadAll(); } catch (e) {}
     }
   }
+
   async function replayOp(c, storeId, op) {
     switch (op.type) {
       case 'createSale': await replayCreateSale(c, storeId, op.payload); break;
@@ -605,8 +583,6 @@
           if (u.error) throw u.error;
         }
         break;
-      default:
-        console.warn('[ApDb] Unknown queue operation type:', op.type);
     }
   }
 
@@ -701,20 +677,14 @@
     await c.from('expenses').insert(expRow);
   }
 
-
   // ─── Online/Offline detection ───
   if (typeof window !== 'undefined') {
-    function checkRealOnline() {
-      if (!navigator.onLine) return false;
-      return true;
-    }
-    
     window.addEventListener('online', function () {
       isOnline = true;
       updateOnlineUI();
       if (global.toast) global.toast('Интернет восстановлен. Синхронизация...', 'ok');
       if (global.updateOfflineBanner) global.updateOfflineBanner();
-      setTimeout(function() { processOfflineQueue(); }, 500);
+      processOfflineQueue();
       schedulePeriodicSync();
     });
     window.addEventListener('offline', function () {
@@ -724,8 +694,9 @@
       if (global.updateOfflineBanner) global.updateOfflineBanner();
       stopPeriodicSync();
     });
-    isOnline = checkRealOnline();
+    isOnline = navigator.onLine !== false;
   }
+
   function sb() {
     return global.ApAuth && global.ApAuth.client();
   }
@@ -974,14 +945,8 @@
   function deferredToRow(d, sId) {
     var items = d.items || [{ productId: d.productId, productCode: d.productCode, productName: d.productName, quantity: d.quantity, unitPrice: d.unitPrice, total: d.total }];
     return items.map(function (item, idx) {
-      var baseId = d.id || ('DEF_' + Date.now() + '_' + idx);
-      var itemId = item.id || (baseId + '_' + idx);
-      // Ensure ID is a valid UUID format (remove any suffixes that break UUID)
-      if (itemId.indexOf('_') > 0 && itemId.length > 36) {
-        itemId = baseId.split('_')[0] + '_' + idx;
-      }
       return {
-        id: itemId, store_id: sId,
+        id: item.id || (d.id + '_' + idx) || undefined, store_id: sId,
         customer_name: d.customerName || '', customer_phone: d.customerPhone || '',
         product_id: item.productId || null, product_code: item.productCode || '',
         product_name: item.productName || '', quantity: item.quantity || 1,
@@ -1018,10 +983,10 @@
     return {
       id: doc.id || undefined, store_id: sId,
       doc_type: doc.docType || doc.type || '',
-      doc_number: doc.docNumber || doc.doc_number || ('DOC_' + Date.now()),
+      doc_number: doc.docNumber || undefined,
       status: doc.status || 'pending',
       customer_name: doc.customerName || '',
-      customer_phone: (doc.customerPhone !== undefined && doc.customerPhone !== null) ? String(doc.customerPhone) : '',
+      customer_phone: doc.customerPhone || '',
       total: doc.total || 0,
       created_by: doc.createdBy || null,
       created_by_name: doc.createdByName || '',
