@@ -10,8 +10,7 @@ function findUserByLogin(usernameOrEmail) {
         return (email === norm || un === norm || email.split('@')[0] === norm) && u.active !== false;
     });
     if (user) return user;
-    return getLocalUsers().find(u => (u.username || '').toLowerCase() === norm && u.active !== false;
-    });
+    return getLocalUsers().find(u => (u.username || '').toLowerCase() === norm && u.active !== false);
 }
 
 async function showLogin() {
