@@ -3,14 +3,11 @@ import { currentStoreId } from './store.js';
 import { toast } from './notifications.js';
 import { closeModal } from './utils.js';
 
-
-
-var _uiSettings = null;
+const _uiSettings = null;
 
 function getUISettings() {
-    if (_uiSettings)
-        return _uiSettings;
-    var v = window.ApDb && window.ApDb.getAppData ? window.ApDb.getAppData('ui_settings') : null;
+    if (_uiSettings) return _uiSettings;
+    const v = window.ApDb && window.ApDb.getAppData ? window.ApDb.getAppData('ui_settings') : null;
     if (v && typeof v === 'object') {
         _uiSettings = v;
         return _uiSettings;
@@ -30,17 +27,17 @@ function saveUISettings() {
 }
 
 function applyUISettings() {
-    var s = getUISettings();
-    var scale = s.scale || 1;
-    var cardSize = s.cardSize || 1;
-    var cols = s.cols || 4;
-    var btnSize = s.buttonSize || 1;
-    var colsCss = cols;
+    const s = getUISettings();
+    const scale = s.scale || 1;
+    const cardSize = s.cardSize || 1;
+    const cols = s.cols || 4;
+    const btnSize = s.buttonSize || 1;
+    const colsCss = cols;
     if (window.innerWidth < 768)
         colsCss = Math.min(cols, 3);
     if (window.innerWidth < 480)
         colsCss = Math.min(cols, 2);
-    var styleEl = document.getElementById('ui-dynamic-style');
+    const styleEl = document.getElementById('ui-dynamic-style');
     if (!styleEl) {
         styleEl = document.createElement('style');
         styleEl.id = 'ui-dynamic-style';
@@ -51,33 +48,30 @@ function applyUISettings() {
     applyUIPosMode(s.posMode || 'standard');
 }
 
-
-
-
 function openStoreSettings() {
-    var ds = window.DataService;
+    const ds = window.DataService;
     document.getElementById('store-bin').value = (ds ? ds.getAppData('store_bin') : null) || localStorage.getItem('ap_store_bin') || '';
     document.getElementById('store-address').value = (ds ? ds.getAppData('store_address') : null) || localStorage.getItem('ap_store_address') || '';
     document.getElementById('store-nds-cert').value = (ds ? ds.getAppData('store_nds_cert') : null) || localStorage.getItem('ap_store_nds_cert') || '';
     document.getElementById('store-bank-name').value = (ds ? ds.getAppData('store_bank_name') : null) || localStorage.getItem('ap_store_bank_name') || '';
     document.getElementById('store-iik').value = (ds ? ds.getAppData('store_iik') : null) || localStorage.getItem('ap_store_iik') || '';
     document.getElementById('store-bik').value = (ds ? ds.getAppData('store_bik') : null) || localStorage.getItem('ap_store_bik') || '';
-    var savedLimit = (ds ? ds.getAppData('return_limit') : null) || parseInt(localStorage.getItem('sanaq_return_limit_' + (currentStoreId || '')) || '3');
-    var limitInput = document.getElementById('setting-return-limit');
+    const savedLimit = (ds ? ds.getAppData('return_limit') : null) || parseInt(localStorage.getItem('sanaq_return_limit_' + (currentStoreId || '')) || '3');
+    const limitInput = document.getElementById('setting-return-limit');
     if (limitInput)
         limitInput.value = savedLimit;
     openModal('modal-store-settings');
 }
 
 function saveStoreSettings() {
-    var ds = window.DataService;
-    var bin = document.getElementById('store-bin').value.trim();
-    var addr = document.getElementById('store-address').value.trim();
-    var nds = document.getElementById('store-nds-cert').value.trim();
-    var bank = document.getElementById('store-bank-name').value.trim();
-    var iik = document.getElementById('store-iik').value.trim();
-    var bik = document.getElementById('store-bik').value.trim();
-    var returnLimit = parseInt(document.getElementById('setting-return-limit').value) || 3;
+    const ds = window.DataService;
+    const bin = document.getElementById('store-bin').value.trim();
+    const addr = document.getElementById('store-address').value.trim();
+    const nds = document.getElementById('store-nds-cert').value.trim();
+    const bank = document.getElementById('store-bank-name').value.trim();
+    const iik = document.getElementById('store-iik').value.trim();
+    const bik = document.getElementById('store-bik').value.trim();
+    const returnLimit = parseInt(document.getElementById('setting-return-limit').value) || 3;
     localStorage.setItem('ap_store_bin', bin);
     localStorage.setItem('ap_store_address', addr);
     localStorage.setItem('ap_store_nds_cert', nds);
@@ -100,7 +94,5 @@ function saveStoreSettings() {
     toast('Настройки сохранены', 'ok');
     closeModal('modal-store-settings');
 }
-
-
 
 export { _uiSettings, getUISettings, saveUISettings, applyUISettings, openStoreSettings, saveStoreSettings };

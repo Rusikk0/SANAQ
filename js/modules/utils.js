@@ -15,42 +15,42 @@ import { getCustomerTier } from './customers.js';
 
 function wrap(n, fb) { return function () { var s = ctx(n); return s ? s.apply(null, arguments) : (typeof fb === 'function' ? fb.apply(null, arguments) : undefined); }; }
 
-var toast = wrap('toast');
-var openModal = wrap('openModal');
-var refreshAll = wrap('refreshAll');
-var _reopenParentModal = wrap('_reopenParentModal');
-var goPage = wrap('goPage');
-var renderNotifications = wrap('renderNotifications');
-var renderDashboard = wrap('renderDashboard');
-var isSaleActive = wrap('isSaleActive');
-var togglePaymentSection = wrap('togglePaymentSection');
-var calcMixedRemainder = wrap('calcMixedRemainder');
-var addAuditLog = wrap('addAuditLog');
-var renderAuditSessionTable = wrap('renderAuditSessionTable');
-var isExpenseActive = wrap('isExpenseActive');
-var renderProducts = wrap('renderProducts');
-var renderUnsoldProducts = wrap('renderUnsoldProducts');
-var getOpenShiftForCashier = wrap('getOpenShiftForCashier');
-var checkPermission = wrap('checkPermission');
-var requireAdminPin = wrap('requireAdminPin');
-var isAdmin = wrap('isAdmin');
-var getUserMaxDiscount = wrap('getUserMaxDiscount');
-var _permUserId = wrap('_permUserId');
-var getUserData = wrap('getUserData');
-var setUserPermissions = wrap('setUserPermissions');
-var renderPermissionsEditor = wrap('renderPermissionsEditor');
-var doSwitchUser = wrap('doSwitchUser');
-var _findUserAnywhere = wrap('_findUserAnywhere');
-var getSelectedCartItem = wrap('getSelectedCartItem');
-var updateCartQty = wrap('updateCartQty');
-var removeFromCart = wrap('removeFromCart');
-var renderSaleCart = wrap('renderSaleCart');
-var saveUserPin = wrap('saveUserPin');
-var getUserPin = wrap('getUserPin');
+const toast = wrap('toast');
+const openModal = wrap('openModal');
+const refreshAll = wrap('refreshAll');
+const _reopenParentModal = wrap('_reopenParentModal');
+const goPage = wrap('goPage');
+const renderNotifications = wrap('renderNotifications');
+const renderDashboard = wrap('renderDashboard');
+const isSaleActive = wrap('isSaleActive');
+const togglePaymentSection = wrap('togglePaymentSection');
+const calcMixedRemainder = wrap('calcMixedRemainder');
+const addAuditLog = wrap('addAuditLog');
+const renderAuditSessionTable = wrap('renderAuditSessionTable');
+const isExpenseActive = wrap('isExpenseActive');
+const renderProducts = wrap('renderProducts');
+const renderUnsoldProducts = wrap('renderUnsoldProducts');
+const getOpenShiftForCashier = wrap('getOpenShiftForCashier');
+const checkPermission = wrap('checkPermission');
+const requireAdminPin = wrap('requireAdminPin');
+const isAdmin = wrap('isAdmin');
+const getUserMaxDiscount = wrap('getUserMaxDiscount');
+const _permUserId = wrap('_permUserId');
+const getUserData = wrap('getUserData');
+const setUserPermissions = wrap('setUserPermissions');
+const renderPermissionsEditor = wrap('renderPermissionsEditor');
+const doSwitchUser = wrap('doSwitchUser');
+const _findUserAnywhere = wrap('_findUserAnywhere');
+const getSelectedCartItem = wrap('getSelectedCartItem');
+const updateCartQty = wrap('updateCartQty');
+const removeFromCart = wrap('removeFromCart');
+const renderSaleCart = wrap('renderSaleCart');
+const saveUserPin = wrap('saveUserPin');
+const getUserPin = wrap('getUserPin');
 // onWoSearch, updateAuditQty, switchAuditsTab, switchUnsoldPeriod, stopTracks, focusSearch — defined locally below
 
 function getCurrentStoreName() {
-    var m = window.ApAuth && window.ApAuth.getCurrentStore();
+    const m = window.ApAuth && window.ApAuth.getCurrentStore();
     return m ? m.storeName : 'Магазин';
 }
 
@@ -59,7 +59,7 @@ function normalizeCode(str) {
 }
 
 function levenshtein(a, b) {
-    var m = [], i, j;
+    const m = [], i, j;
     for (i = 0; i <= b.length; i++)
         m[i] = [i];
     for (j = 0; j <= a.length; j++)
@@ -73,9 +73,9 @@ function levenshtein(a, b) {
 }
 
 function generateSearchVariations(term) {
-    var t = term.trim().toLowerCase();
-    var results = [t];
-    var ruToEn = {
+    const t = term.trim().toLowerCase();
+    const results = [t];
+    const ruToEn = {
         'й': 'q',
         'ц': 'w',
         'у': 'e',
@@ -111,7 +111,7 @@ function generateSearchVariations(term) {
         'ё': '`',
         ' ': ' '
     };
-    var enToRu = {
+    const enToRu = {
         'q': 'й',
         'w': 'ц',
         'e': 'у',
@@ -147,10 +147,10 @@ function generateSearchVariations(term) {
         '`': 'ё',
         ' ': ' '
     };
-    var hasEnglish = /[a-zA-Z]/.test(t);
-    var hasRussian = /[а-яА-ЯёЁ]/.test(t);
+    const hasEnglish = /[a-zA-Z]/.test(t);
+    const hasRussian = /[а-яА-ЯёЁ]/.test(t);
     if (hasEnglish && !hasRussian) {
-        var translit = '';
+        const translit = '';
         for (var i = 0; i < t.length; i++) {
             translit += enToRu[t[i]] || t[i];
         }
@@ -158,15 +158,15 @@ function generateSearchVariations(term) {
             results.push(translit);
     }
     if (hasRussian && !hasEnglish) {
-        var translit2 = '';
+        const translit2 = '';
         for (var j = 0; j < t.length; j++) {
             translit2 += ruToEn[t[j]] || t[j];
         }
         if (translit2 !== t)
             results.push(translit2);
     }
-    var mixed = '';
-    var mixedMap = {
+    const mixed = '';
+    const mixedMap = {
         'c': 'к',
         'e': 'е',
         'o': 'о',
@@ -184,66 +184,66 @@ function generateSearchVariations(term) {
 }
 
 function generateEAN13(seed) {
-    var s = String(200000000000 + seed % 99999999999);
+    const s = String(200000000000 + seed % 99999999999);
     while (s.length < 12)
         s = '0' + s;
-    var sum = 0;
+    const sum = 0;
     for (var i = 0; i < 12; i++) {
         sum += parseInt(s[i], 10) * (i % 2 === 0 ? 1 : 3);
     }
-    var check = (10 - sum % 10) % 10;
+    const check = (10 - sum % 10) % 10;
     return s + check;
 }
 
 function drawEan13Svg(text, modW, barH) {
     modW = modW || 2;
     barH = barH || 60;
-    var guardH = barH + Math.round(barH * 0.1);
-    var digits = String(text).replace(/\D/g, '');
+    const guardH = barH + Math.round(barH * 0.1);
+    const digits = String(text).replace(/\D/g, '');
     while (digits.length < 13)
         digits = '0' + digits;
     digits = digits.substring(0, 13);
-    var bits = '101';
-    var firstDigit = parseInt(digits[0]);
-    var parity = EAN_PARITY[firstDigit];
+    const bits = '101';
+    const firstDigit = parseInt(digits[0]);
+    const parity = EAN_PARITY[firstDigit];
     for (var i = 0; i < 6; i++) {
-        var d = parseInt(digits[i + 1]);
+        const d = parseInt(digits[i + 1]);
         bits += parity[i] === 'L' ? EAN_L[d] : EAN_G[d];
     }
     bits += '01010';
     for (var i = 0; i < 6; i++) {
-        var d = parseInt(digits[i + 7]);
+        const d = parseInt(digits[i + 7]);
         bits += EAN_R[d];
     }
     bits += '101';
-    var totalW = bits.length * modW;
-    var quiet = modW * 10;
-    var svgW = totalW + quiet * 2;
-    var svgH = barH + 18;
-    var rects = [];
+    const totalW = bits.length * modW;
+    const quiet = modW * 10;
+    const svgW = totalW + quiet * 2;
+    const svgH = barH + 18;
+    const rects = [];
     for (var i = 0; i < bits.length; i++) {
         if (bits[i] === '1') {
-            var isGuard = i < 3 || i >= 45 && i < 50 || i >= 92;
-            var h = isGuard ? guardH : barH;
+            const isGuard = i < 3 || i >= 45 && i < 50 || i >= 92;
+            const h = isGuard ? guardH : barH;
             rects.push('<rect x="' + (quiet + i * modW) + '" y="0" width="' + modW + '" height="' + h + '" fill="#000"/>');
         }
     }
-    var textY = barH + 10;
-    var fontSize = Math.max(8, modW * 6);
-    var smallFontSize = Math.max(6, modW * 5);
-    var x1 = quiet - modW * 2;
-    var leftStart = quiet + 3 * modW;
-    var leftSpan = 42 * modW;
-    var rightStart = quiet + 50 * modW;
-    var rightSpan = 42 * modW;
-    var textHtml = '';
+    const textY = barH + 10;
+    const fontSize = Math.max(8, modW * 6);
+    const smallFontSize = Math.max(6, modW * 5);
+    const x1 = quiet - modW * 2;
+    const leftStart = quiet + 3 * modW;
+    const leftSpan = 42 * modW;
+    const rightStart = quiet + 50 * modW;
+    const rightSpan = 42 * modW;
+    const textHtml = '';
     textHtml += '<text x="' + x1 + '" y="' + textY + '" font-size="' + fontSize + '" font-family="Arial,sans-serif" text-anchor="end">' + digits[0] + '</text>';
     for (var i = 0; i < 6; i++) {
-        var cx = leftStart + (i * 7 + 3.5) * modW;
+        const cx = leftStart + (i * 7 + 3.5) * modW;
         textHtml += '<text x="' + cx + '" y="' + textY + '" font-size="' + smallFontSize + '" font-family="Arial,sans-serif" text-anchor="middle">' + digits[i + 1] + '</text>';
     }
     for (var i = 0; i < 6; i++) {
-        var cx = rightStart + (i * 7 + 3.5) * modW;
+        const cx = rightStart + (i * 7 + 3.5) * modW;
         textHtml += '<text x="' + cx + '" y="' + textY + '" font-size="' + smallFontSize + '" font-family="Arial,sans-serif" text-anchor="middle">' + digits[i + 7] + '</text>';
     }
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" shape-rendering="crispEdges">' + '<rect x="0" y="0" width="' + svgW + '" height="' + svgH + '" fill="#fff"/>' + rects.join('') + textHtml + '</svg>';
@@ -252,28 +252,28 @@ function drawEan13Svg(text, modW, barH) {
 function drawCode39Svg(text, scale, heightScale) {
     scale = scale || 1;
     heightScale = heightScale || scale;
-    var enc = '*' + String(text).toUpperCase().replace(/[^0-9A-Z\-\.\ \$\/\+\%]/g, '') + '*';
-    var narrow = 2 * scale, wide = 6 * scale, height = 40 * heightScale, x = 2 * scale, rects = [];
+    const enc = '*' + String(text).toUpperCase().replace(/[^0-9A-Z\-\.\ \$\/\+\%]/g, '') + '*';
+    const narrow = 2 * scale, wide = 6 * scale, height = 40 * heightScale, x = 2 * scale, rects = [];
     for (var i = 0; i < enc.length; i++) {
-        var pat = CODE39[enc[i]];
+        const pat = CODE39[enc[i]];
         if (!pat)
             continue;
         for (var j = 0; j < 9; j++) {
-            var w = pat[j] === 'w' ? wide : narrow;
+            const w = pat[j] === 'w' ? wide : narrow;
             if (j % 2 === 0)
                 rects.push('<rect x="' + x + '" y="' + 1 * heightScale + '" width="' + w + '" height="' + (height - 2 * heightScale) + '" fill="#000"/>');
             x += w;
         }
         x += narrow;
     }
-    var totalW = x + 2 * scale;
+    const totalW = x + 2 * scale;
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' + totalW + '" height="' + height + '" viewBox="0 0 ' + totalW + ' ' + height + '" shape-rendering="crispEdges">' + rects.join('') + '</svg>';
 }
 
 function updateMarkup() {
-    var purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
-    var price = parseFloat(document.getElementById('product-price').value) || 0;
-    var el = document.getElementById('markup-display');
+    const purchase = parseFloat(document.getElementById('product-purchase').value) || 0;
+    const price = parseFloat(document.getElementById('product-price').value) || 0;
+    const el = document.getElementById('markup-display');
     if (!el)
         return;
     if (purchase <= 0) {
@@ -281,8 +281,8 @@ function updateMarkup() {
         el.style.color = 'var(--muted)';
         return;
     }
-    var pct = ((price - purchase) / purchase * 100).toFixed(1);
-    var isNeg = pct < 0;
+    const pct = ((price - purchase) / purchase * 100).toFixed(1);
+    const isNeg = pct < 0;
     el.textContent = 'Наценка: ' + (isNeg ? '' : '+') + pct + '%';
     el.style.color = isNeg ? 'var(--err)' : 'var(--ok)';
     el.style.background = isNeg ? 'rgba(239,68,68,.1)' : 'rgba(34,197,94,.1)';
@@ -298,14 +298,14 @@ function fmtShort(n) {
 
 function fmtDate(d) {
     if (!d) return '';
-    var dt = new Date(d);
+    const dt = new Date(d);
     if (isNaN(dt.getTime())) return String(d);
     return dt.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function fmtDateTime(d) {
     if (!d) return '';
-    var dt = new Date(d);
+    const dt = new Date(d);
     if (isNaN(dt.getTime())) return String(d);
     return dt.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
@@ -319,91 +319,72 @@ function esc(s) {
 }
 
 function todayStr() {
-    var d = new Date();
-    var mm = String(d.getMonth() + 1).padStart(2, '0');
-    var dd = String(d.getDate()).padStart(2, '0');
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
     return d.getFullYear() + '-' + mm + '-' + dd;
 }
 
 function getFieldValue(obj, field) {
-    if (!obj || field == null)
-        return '';
+    if (!obj || field == null) return '';
     if (field === '_categoryName') {
-        var cat = getCategories().find(function (c) {
-            return c.id === obj.category;
+        const cat = getCategories().find(c => c.id === obj.category;
         });
         return cat ? cat.name : '';
     }
-    if (field === '_status')
-        return obj.status === 'cancelled' || obj.status === 'returned' ? 'Отменён' : 'Активен';
-    if (field === '_saleStatus')
-        return isSaleActive(obj) ? 'Завершена' : 'Отменена';
-    if (field === '_expenseStatus')
-        return isExpenseActive(obj) ? 'Активен' : 'Отменён';
-    if (field === '_docNum')
-        return (obj.receiptId || obj.id || '').slice(-6);
+    if (field === '_status') return obj.status === 'cancelled' || obj.status === 'returned' ? 'Отменён' : 'Активен';
+    if (field === '_saleStatus') return isSaleActive(obj) ? 'Завершена' : 'Отменена';
+    if (field === '_expenseStatus') return isExpenseActive(obj) ? 'Активен' : 'Отменён';
+    if (field === '_docNum') return (obj.receiptId || obj.id || '').slice(-6);
     if (field === '_customerName') {
-        if (obj.customerName)
-            return obj.customerName;
+        if (obj.customerName) return obj.customerName;
         if (obj.customerId) {
-            var c = getCustomers().find(function (x) {
-                return x.id === obj.customerId;
+            const c = getCustomers().find(x => x.id === obj.customerId;
             });
             return c ? c.name : '';
         }
         return '';
     }
-    if (field === '_paymentLabel')
-        return PAY_LABELS[obj.payment] || obj.payment || '';
-    if (field === '_docType')
-        return obj.docType === 'invoice' ? 'Счёт' : obj.docType === 'z2' ? 'З-2' : obj.docType || '';
-    if (field === '_docStatus')
-        return obj.status === 'pending' ? 'Ожидает' : obj.status === 'paid' ? 'Оплачено' : obj.status === 'issued' ? 'Выписано' : 'Отменено';
-    if (field === '_createdByName')
-        return obj.createdByName || obj.userName || '';
+    if (field === '_paymentLabel') return PAY_LABELS[obj.payment] || obj.payment || '';
+    if (field === '_docType') return obj.docType === 'invoice' ? 'Счёт' : obj.docType === 'z2' ? 'З-2' : obj.docType || '';
+    if (field === '_docStatus') return obj.status === 'pending' ? 'Ожидает' : obj.status === 'paid' ? 'Оплачено' : obj.status === 'issued' ? 'Выписано' : 'Отменено';
+    if (field === '_createdByName') return obj.createdByName || obj.userName || '';
     if (field === '_tierName') {
-        var t = getCustomerTier(Number(obj.spent) || 0);
+        const t = getCustomerTier(Number(obj.spent) || 0);
         return t ? t.name : '';
     }
     if (field === '_lastPurchase') {
-        if (!obj.id)
-            return '';
-        var lastSale = getSales().filter(isSaleActive).filter(function (s) {
-            return s.customerId === obj.id;
-        }).sort(function (a, b) {
-            return (b.date || '').localeCompare(a.date || '');
+        if (!obj.id) return '';
+        const lastSale = getSales().filter(isSaleActive).filter(s => s.customerId === obj.id;
+        }).sort(a, b => (b.date || '').localeCompare(a.date || '');
         });
         return lastSale.length ? lastSale[0].date : '';
     }
     if (field === '_debtorPhone' || field === '_debtorRating') {
-        var debtors = window.getDebtors ? getDebtors() : [];
-        var debtor = debtors.find(function (d) {
-            return d.id === obj.debtorId;
+        const debtors = window.getDebtors ? getDebtors() : [];
+        const debtor = debtors.find(d => d.id === obj.debtorId;
         });
-        if (field === '_debtorPhone')
-            return debtor ? debtor.phone : '';
+        if (field === '_debtorPhone') return debtor ? debtor.phone : '';
         return debtor ? debtor.rating : '';
     }
-    if (field === '_profit')
-        return Number(obj.revenue || 0) - Number(obj.cogs || 0);
+    if (field === '_profit') return Number(obj.revenue || 0) - Number(obj.cogs || 0);
     if (field === '_share') {
-        var share = window._cashierShare || 5;
+        const share = window._cashierShare || 5;
         return (Number(obj.revenue || 0) * share / 100).toFixed(0);
     }
-    if (field === 'supplier')
-        return obj.supplier || '';
-    var val = obj[field];
+    if (field === 'supplier') return obj.supplier || '';
+    const val = obj[field];
     return val !== null && val !== undefined ? val : '';
 }
 
 async function createExcelWorkbook(headers, rows, widths, sheetName, numFmts) {
     if (typeof ExcelJS !== 'undefined') {
-        var wb = new ExcelJS.Workbook();
+        const wb = new ExcelJS.Workbook();
         wb.creator = 'SANAQ';
         wb.created = new Date();
-        var ws = wb.addWorksheet(sheetName || 'Данные', { views: [{ showGridLines: false }] });
+        const ws = wb.addWorksheet(sheetName || 'Данные', { views: [{ showGridLines: false }] });
         ws.properties.defaultRowHeight = 20;
-        var headerStyle = {
+        const headerStyle = {
             font: {
                 name: 'Arial',
                 size: 10,
@@ -427,17 +408,17 @@ async function createExcelWorkbook(headers, rows, widths, sheetName, numFmts) {
                 right: { style: 'thin' }
             }
         };
-        var headerRow = ws.addRow(headers);
+        const headerRow = ws.addRow(headers);
         headerRow.height = 28;
         headerRow.eachCell(function (cell) {
             styleExcelCell(cell, headerStyle);
         });
-        var alt = false;
-        rows.forEach(function (rowData) {
-            var row = ws.addRow(rowData);
+        const alt = false;
+        rows.forEach(rowData => {
+            const row = ws.addRow(rowData);
             row.eachCell(function (cell, colIdx) {
-                var fmt = numFmts && numFmts[colIdx - 1];
-                var isNum = fmt === '#,##0' || fmt === '#,##0.00' || fmt === '#,##0.0';
+                const fmt = numFmts && numFmts[colIdx - 1];
+                const isNum = fmt === '#,##0' || fmt === '#,##0.00' || fmt === '#,##0.0';
                 styleExcelCell(cell, {
                     font: {
                         name: 'Arial',
@@ -482,22 +463,21 @@ async function createExcelWorkbook(headers, rows, widths, sheetName, numFmts) {
             });
             alt = !alt;
         });
-        widths.forEach(function (w, i) {
+        widths.forEach(w, i => {
             ws.getColumn(i + 1).width = w;
         });
-        var buffer;
+        const buffer;
         try { buffer = await wb.xlsx.writeBuffer(); } catch (e) { throw new Error('Excel write failed: ' + e.message); }
         return buffer;
     }
     if (typeof XLSX !== 'undefined') {
-        var data = [headers].concat(rows);
-        var ws2 = XLSX.utils.aoa_to_sheet(data);
-        ws2['!cols'] = widths.map(function (w) {
-            return { wch: w };
+        const data = [headers].concat(rows);
+        const ws2 = XLSX.utils.aoa_to_sheet(data);
+        ws2['!cols'] = widths.map(w => { wch: w };
         });
-        var wb2 = XLSX.utils.book_new();
+        const wb2 = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb2, ws2, sheetName || 'Данные');
-        var out = XLSX.write(wb2, {
+        const out = XLSX.write(wb2, {
             bookType: 'xlsx',
             type: 'buffer'
         });
@@ -520,9 +500,9 @@ function styleExcelCell(cell, opts) {
 }
 
 function saveExcelBuffer(buffer, filename) {
-    var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    var url = URL.createObjectURL(blob);
-    var link = document.createElement('a');
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
@@ -532,16 +512,15 @@ function saveExcelBuffer(buffer, filename) {
 }
 
 async function downloadExcelTemplate(section) {
-    var cfg = EXCEL_SECTIONS[section];
+    const cfg = EXCEL_SECTIONS[section];
     if (!cfg) {
         toast('Неизвестный раздел', 'err');
         return;
     }
-    var emptyRow = cfg.fields.map(function () {
-        return '';
+    const emptyRow = cfg.fields.map( => '';
     });
     try {
-        var buffer = await createExcelWorkbook(cfg.headers, [emptyRow], cfg.widths, cfg.label);
+        const buffer = await createExcelWorkbook(cfg.headers, [emptyRow], cfg.widths, cfg.label);
         saveExcelBuffer(buffer, 'Шаблон_' + cfg.label + '_' + todayStr() + '.xlsx');
         toast('Шаблон скачан', 'ok');
     } catch (e) { toast('Ошибка скачивания шаблона: ' + e.message, 'err'); }
@@ -554,33 +533,33 @@ function readExcelFile(file, section) {
         toast('Импорт уже выполняется. Дождитесь завершения.', 'err');
         return;
     }
-    var cfg = EXCEL_SECTIONS[section];
+    const cfg = EXCEL_SECTIONS[section];
     if (!cfg) {
         toast('Неизвестный раздел', 'err');
         return;
     }
     setImportState({ section: section, rawData: null, colMap: null, rows: null, fileName: file.name });
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function (e) {
         try {
-            var opts = { type: 'array' };
-            var name = file.name.toLowerCase();
+            const opts = { type: 'array' };
+            const name = file.name.toLowerCase();
             if (name.endsWith('.csv')) {
-                var text = new TextDecoder('utf-8').decode(e.target.result);
-                var wb = XLSX.read(text, {
+                const text = new TextDecoder('utf-8').decode(e.target.result);
+                const wb = XLSX.read(text, {
                     type: 'string',
                     raw: true
                 });
             } else {
-                var wb = XLSX.read(e.target.result, opts);
+                const wb = XLSX.read(e.target.result, opts);
             }
-            var ws = wb.Sheets[wb.SheetNames[0]];
+            const ws = wb.Sheets[wb.SheetNames[0]];
             if (!ws) {
                 toast('Файл не содержит листов', 'err');
                 _importState.section = null;
                 return;
             }
-            var raw = XLSX.utils.sheet_to_json(ws, {
+            const raw = XLSX.utils.sheet_to_json(ws, {
                 header: 1,
                 defval: ''
             });
@@ -603,15 +582,13 @@ function readExcelFile(file, section) {
 }
 
 function showImportPreview(section, rawData, fileName) {
-    var cfg = EXCEL_SECTIONS[section];
+    const cfg = EXCEL_SECTIONS[section];
     if (!cfg) {
         _importState.section = null;
         return;
     }
-    var headers = rawData[0] || [];
-    var dataRows = rawData.slice(1).filter(function (r) {
-        return r.some(function (c) {
-            return c !== '';
+    const headers = rawData[0] || [];
+    const dataRows = rawData.slice(1).filter(r => r.some(c => c !== '';
         });
     });
     if (dataRows.length === 0) {
@@ -619,20 +596,20 @@ function showImportPreview(section, rawData, fileName) {
         _importState.section = null;
         return;
     }
-    var colMap = {};
-    var missing = [];
-    cfg.fields.forEach(function (field) {
-        var fieldIdx = cfg.fields.indexOf(field);
+    const colMap = {};
+    const missing = [];
+    cfg.fields.forEach(field => {
+        const fieldIdx = cfg.fields.indexOf(field);
         if (fieldIdx < 0)
             return;
-        var expected = cfg.headers[fieldIdx] || '';
-        var hdrIdx = -1;
-        headers.forEach(function (h, i) {
+        const expected = cfg.headers[fieldIdx] || '';
+        const hdrIdx = -1;
+        headers.forEach(h, i => {
             if (String(h).toLowerCase().trim() === expected.toLowerCase().trim())
                 hdrIdx = i;
         });
         if (hdrIdx < 0) {
-            headers.forEach(function (h, i) {
+            headers.forEach(h, i => {
                 if (hdrIdx >= 0)
                     return;
                 if (String(h).toLowerCase().indexOf(expected.toLowerCase().slice(0, 4)) >= 0)
@@ -642,7 +619,7 @@ function showImportPreview(section, rawData, fileName) {
         if (hdrIdx >= 0)
             colMap[field] = hdrIdx;
     });
-    cfg.required.forEach(function (field) {
+    cfg.required.forEach(field => {
         if (colMap[field] === undefined)
             missing.push(cfg.headers[cfg.fields.indexOf(field)] || field);
     });
@@ -658,17 +635,17 @@ function showImportPreview(section, rawData, fileName) {
         rows: dataRows,
         fileName: fileName
     });
-    var previewHtml = '<div style="max-height:400px;overflow-y:auto">';
+    const previewHtml = '<div style="max-height:400px;overflow-y:auto">';
     previewHtml += '<table><thead><tr>';
-    cfg.headers.forEach(function (h) {
+    cfg.headers.forEach(h => {
         previewHtml += '<th>' + escapeHtml(h) + '</th>';
     });
     previewHtml += '</tr></thead><tbody>';
-    var maxPreview = Math.min(dataRows.length, 20);
+    const maxPreview = Math.min(dataRows.length, 20);
     for (var i = 0; i < maxPreview; i++) {
         previewHtml += '<tr>';
-        cfg.fields.forEach(function (field) {
-            var colIdx = colMap[field];
+        cfg.fields.forEach(field => {
+            const colIdx = colMap[field];
             previewHtml += '<td>' + escapeHtml(colIdx >= 0 ? dataRows[i][colIdx] : '') + '</td>';
         });
         previewHtml += '</tr>';
@@ -686,22 +663,22 @@ function showImportPreview(section, rawData, fileName) {
 }
 
 function confirmImport() {
-    var state = _importState;
+    const state = _importState;
     if (!state || !state.section) {
         toast('Нет данных для импорта', 'err');
         return;
     }
-    var cfg = EXCEL_SECTIONS[state.section];
+    const cfg = EXCEL_SECTIONS[state.section];
     if (!cfg)
         return;
-    var colMap = state.colMap;
-    var dataRows = state.rows;
-    var success = 0, errors = 0;
-    dataRows.forEach(function (row) {
+    const colMap = state.colMap;
+    const dataRows = state.rows;
+    const success = 0, errors = 0;
+    dataRows.forEach(row => {
         try {
-            var item = {};
-            Object.keys(colMap).forEach(function (field) {
-                var colIdx = colMap[field];
+            const item = {};
+            Object.keys(colMap).forEach(field => {
+                const colIdx = colMap[field];
                 if (colIdx >= 0)
                     item[field] = row[colIdx] !== undefined && row[colIdx] !== null ? String(row[colIdx]).trim() : '';
             });
@@ -710,15 +687,13 @@ function confirmImport() {
                     errors++;
                     return;
                 }
-                var existing = getProducts();
-                var dup = null;
+                const existing = getProducts();
+                const dup = null;
                 if (item.barcode)
-                    dup = existing.find(function (p) {
-                        return p.barcode === item.barcode;
+                    dup = existing.find(p => p.barcode === item.barcode;
                     });
                 if (!dup && item.code)
-                    dup = existing.find(function (p) {
-                        return p.code === item.code;
+                    dup = existing.find(p => p.code === item.code;
                     });
                 if (dup) {
                     if (item.name)
@@ -768,9 +743,8 @@ function confirmImport() {
                     errors++;
                     return;
                 }
-                var customers = getCustomers();
-                var dupC = customers.find(function (c) {
-                    return (c.phone || '').replace(/\D/g, '') === item.phone.replace(/\D/g, '');
+                const customers = getCustomers();
+                const dupC = customers.find(c => (c.phone || '').replace(/\D/g, '') === item.phone.replace(/\D/g, '');
                 });
                 if (!dupC) {
                     customers.push({
@@ -788,7 +762,7 @@ function confirmImport() {
                     errors++;
                     return;
                 }
-                var expenses = getExpenses();
+                const expenses = getExpenses();
                 expenses.push({
                     id: uid(),
                     category: item.category,
@@ -834,12 +808,12 @@ function closeModal(id) {
 }
 
 function toggleSidebar() {
-    var s = document.querySelector('.sidebar');
-    var btn = document.getElementById('sidebar-collapse-btn');
+    const s = document.querySelector('.sidebar');
+    const btn = document.getElementById('sidebar-collapse-btn');
     if (!s)
         return;
     s.classList.toggle('collapsed');
-    var collapsed = s.classList.contains('collapsed');
+    const collapsed = s.classList.contains('collapsed');
     if (btn)
         btn.innerHTML = collapsed ? '<i data-lucide="panel-left"></i>' : '<i data-lucide="panel-left-close"></i>';
     if (typeof lucide !== 'undefined')
@@ -849,11 +823,11 @@ function toggleSidebar() {
 }
 
 function toggleDashLowStock() {
-    var el = document.getElementById('dash-lowstock');
-    var btn = document.querySelector('#panel-dash-lowstock .collapse-btn');
+    const el = document.getElementById('dash-lowstock');
+    const btn = document.querySelector('#panel-dash-lowstock .collapse-btn');
     if (!el)
         return;
-    var hidden = el.style.display === 'none';
+    const hidden = el.style.display === 'none';
     el.style.display = hidden ? '' : 'none';
     if (btn)
         btn.innerHTML = hidden ? '\u25B2' : '\u25BC';
@@ -875,13 +849,13 @@ function showSupabaseLogin() {
 }
 
 function getPeriodDateRange(period) {
-    var now = new Date();
-    var start;
+    const now = new Date();
+    const start;
     if (period === 'today') {
         start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     } else if (period === 'week') {
-        var d = now.getDay();
-        var diff = d === 0 ? 6 : d - 1;
+        const d = now.getDay();
+        const diff = d === 0 ? 6 : d - 1;
         start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
     } else if (period === 'month') {
         start = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -895,11 +869,10 @@ function getPeriodDateRange(period) {
 }
 
 function filterByPeriod(arr, dateField, period) {
-    if (period === 'all')
-        return arr;
-    var range = getPeriodDateRange(period);
+    if (period === 'all') return arr;
+    const range = getPeriodDateRange(period);
     return (arr || []).filter(function (x) {
-        var d = new Date(x[dateField] || x.date || 0);
+        const d = new Date(x[dateField] || x.date || 0);
         return d >= range.start && d <= range.end;
     });
 }
@@ -913,7 +886,7 @@ function finCard(label, value, cls) {
 }
 
 function setPayment(btn) {
-    document.querySelectorAll('.pay-btn, .pos-pay-btn, .pos-pay-strip button').forEach(function (b) {
+    document.querySelectorAll('.pay-btn, .pos-pay-btn, .pos-pay-strip button').forEach(b => {
         b.classList.remove('active');
     });
     btn.classList.add('active');
@@ -921,22 +894,22 @@ function setPayment(btn) {
     togglePaymentSection('cash-change-wrap', currentPayment === 'cash');
     togglePaymentSection('mixed-payment-wrap', currentPayment === 'mixed');
     togglePaymentSection('debt-payment-wrap', currentPayment === 'debt');
-    var totalEl = document.getElementById('sale-total');
-    var finalTotal = totalEl ? parseFloat(totalEl.dataset.value || totalEl.value || 0) : 0;
+    const totalEl = document.getElementById('sale-total');
+    const finalTotal = totalEl ? parseFloat(totalEl.dataset.value || totalEl.value || 0) : 0;
     if (currentPayment === 'cash') {
-        var cg = document.getElementById('cash-given');
+        const cg = document.getElementById('cash-given');
         if (cg)
             cg.value = '';
-        var cc = document.getElementById('cash-change');
+        const cc = document.getElementById('cash-change');
         if (cc)
             cc.value = '';
     }
     if (currentPayment === 'mixed') {
-        var mc = document.getElementById('mixed-cash');
-        var mk = document.getElementById('mixed-kaspi');
-        var mt = document.getElementById('mixed-transfer');
-        var mcg = document.getElementById('mixed-cash-given');
-        var mcc = document.getElementById('mixed-cash-change');
+        const mc = document.getElementById('mixed-cash');
+        const mk = document.getElementById('mixed-kaspi');
+        const mt = document.getElementById('mixed-transfer');
+        const mcg = document.getElementById('mixed-cash-given');
+        const mcc = document.getElementById('mixed-cash-change');
         if (mc)
             mc.value = finalTotal;
         if (mk)
@@ -952,7 +925,7 @@ function setPayment(btn) {
 }
 
 function adjustSelectedQty(delta) {
-    var item = getSelectedCartItem();
+    const item = getSelectedCartItem();
     if (!item) {
         toast('Выберите товар в таблице', 'warn');
         return;
@@ -961,7 +934,7 @@ function adjustSelectedQty(delta) {
 }
 
 function removeSelectedItem() {
-    var item = getSelectedCartItem();
+    const item = getSelectedCartItem();
     if (!item) {
         toast('Выберите товар в таблице', 'warn');
         return;
@@ -972,7 +945,7 @@ function removeSelectedItem() {
 }
 
 function checkSelectedPrice() {
-    var item = getSelectedCartItem();
+    const item = getSelectedCartItem();
     if (!item) {
         toast('Выберите товар в таблице', 'warn');
         return;
@@ -981,7 +954,7 @@ function checkSelectedPrice() {
 }
 
 function focusSearch() {
-    var el = document.getElementById('sale-search');
+    const el = document.getElementById('sale-search');
     if (el) {
         el.focus();
         el.select();
@@ -991,9 +964,8 @@ function focusSearch() {
 function toggleFavoriteFromTable(productId, e) {
     if (e)
         e.stopPropagation();
-    var products = getProducts();
-    var p = products.find(function (x) {
-        return x.id === productId;
+    const products = getProducts();
+    const p = products.find(x => x.id === productId;
     });
     if (!p)
         return;
@@ -1004,17 +976,15 @@ function toggleFavoriteFromTable(productId, e) {
 }
 
 function posRefreshFavorites() {
-    var grid = document.getElementById('pos-fav-grid');
+    const grid = document.getElementById('pos-fav-grid');
     if (!grid)
         return;
-    var favs = getProducts().filter(function (p) {
-        return p.favorite;
+    const favs = getProducts().filter(p => p.favorite;
     });
     if (!favs.length) {
         grid.innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:8px">Нет быстрых товаров</div>';
     } else {
-        grid.innerHTML = favs.map(function (p) {
-            return '<div class="pos-quick-item" onclick="addToCart(\'' + p.id + '\')">' + esc(p.name) + '<div class="qp-price">' + fmt(p.price) + '</div></div>';
+        grid.innerHTML = favs.map(p => '<div class="pos-quick-item" onclick="addToCart(\'' + p.id + '\')">' + esc(p.name) + '<div class="qp-price">' + fmt(p.price) + '</div></div>';
         }).join('');
     }
 }
@@ -1024,25 +994,25 @@ function openPaymentModal() {
         toast('Корзина пуста', 'err');
         return;
     }
-    var shift = getOpenShiftForCashier(currentUser.id) || getOpenShiftForCashier(currentUser.username);
+    const shift = getOpenShiftForCashier(currentUser.id) || getOpenShiftForCashier(currentUser.username);
     if (!shift) {
         toast('Смена (касса) не открыта. Сначала откройте смену.', 'err');
         goPage('myshift');
         return;
     }
-    var totalEl = document.getElementById('sale-total');
-    var total = totalEl ? parseFloat(totalEl.dataset.value || totalEl.value || 0) : 0;
+    const totalEl = document.getElementById('sale-total');
+    const total = totalEl ? parseFloat(totalEl.dataset.value || totalEl.value || 0) : 0;
     if (total <= 0) {
         toast('Сумма чека 0', 'err');
         return;
     }
-    var payBtns = document.querySelectorAll('#modal-pos-payment .pos-pay-strip button');
+    const payBtns = document.querySelectorAll('#modal-pos-payment .pos-pay-strip button');
     if (payBtns.length) {
         setPayment(payBtns[0]);
     }
     openModal('modal-pos-payment');
     setTimeout(function () {
-        var cg = document.getElementById('cash-given');
+        const cg = document.getElementById('cash-given');
         if (cg)
             cg.focus();
     }, 200);
@@ -1050,8 +1020,7 @@ function openPaymentModal() {
 
 function openItemDiscount(cartItemId) {
     setDiscountItemId(cartItemId);
-    var item = saleCart.find(function (c) {
-        return c.id === cartItemId;
+    const item = saleCart.find(c => c.id === cartItemId;
     });
     if (!item) {
         toast('Товар не найден', 'err');
@@ -1076,8 +1045,8 @@ function openItemDiscount(cartItemId) {
 }
 
 function toggleItemDiscountValue() {
-    var type = document.getElementById('item-discount-type').value;
-    var input = document.getElementById('item-discount-value');
+    const type = document.getElementById('item-discount-type').value;
+    const input = document.getElementById('item-discount-value');
     if (type === 'percent') {
         input.max = 100;
         input.placeholder = 'Например: 10';
@@ -1088,22 +1057,21 @@ function toggleItemDiscountValue() {
 }
 
 function applyItemDiscount() {
-    var type = document.getElementById('item-discount-type').value;
-    var value = parseFloat(document.getElementById('item-discount-value').value);
-    var reason = document.getElementById('item-discount-reason').value.trim();
+    const type = document.getElementById('item-discount-type').value;
+    const value = parseFloat(document.getElementById('item-discount-value').value);
+    const reason = document.getElementById('item-discount-reason').value.trim();
     if (!value || value <= 0) {
         toast('Введите значение скидки', 'err');
         return;
     }
-    var item = saleCart.find(function (c) {
-        return c.id === _discountItemId;
+    const item = saleCart.find(c => c.id === _discountItemId;
     });
     if (!item) {
         toast('Товар не найден', 'err');
         return;
     }
-    var maxAllowed = isAdmin() ? 25 : getUserMaxDiscount(currentUser.id);
-    var effectiveDisc = type === 'percent' ? value : value / item.price * 100;
+    const maxAllowed = isAdmin() ? 25 : getUserMaxDiscount(currentUser.id);
+    const effectiveDisc = type === 'percent' ? value : value / item.price * 100;
     if (effectiveDisc > 25) {
         toast('Максимальная скидка в системе \u2014 25%', 'err');
         return;
@@ -1133,7 +1101,7 @@ function applyItemDiscount() {
 
 function stopTracks(stream) {
     try {
-        stream.getTracks().forEach(function (t) {
+        stream.getTracks().forEach(t => {
             t.stop();
         });
     } catch (e) {
@@ -1141,7 +1109,7 @@ function stopTracks(stream) {
 }
 
 function switchUnsoldPeriod(days) {
-    document.querySelectorAll('[data-unsold]').forEach(function (b) {
+    document.querySelectorAll('[data-unsold]').forEach(b => {
         b.classList.toggle('active', parseInt(b.dataset.unsold) === days);
     });
     renderUnsoldProducts(days);
@@ -1159,11 +1127,11 @@ function downloadFile(filename, content, mime) {
 }
 
 function switchAuditsTab(tab) {
-    document.querySelectorAll('#page-audits .tabs .tab').forEach(function (b) {
+    document.querySelectorAll('#page-audits .tabs .tab').forEach(b => {
         b.classList.toggle('active', b.dataset.atab === tab);
     });
-    var wo = document.getElementById('atab-writeoffs');
-    var rec = document.getElementById('atab-reconciliation');
+    const wo = document.getElementById('atab-writeoffs');
+    const rec = document.getElementById('atab-reconciliation');
     if (wo)
         wo.classList.toggle('hidden', tab !== 'writeoffs');
     if (rec)
@@ -1171,22 +1139,20 @@ function switchAuditsTab(tab) {
 }
 
 function onWoSearch() {
-    var q = document.getElementById('wo-product-search').value.trim().toLowerCase();
-    var results = document.getElementById('wo-search-results');
+    const q = document.getElementById('wo-product-search').value.trim().toLowerCase();
+    const results = document.getElementById('wo-search-results');
     if (!q || q.length < 1) {
         results.classList.add('hidden');
         return;
     }
-    var products = getProducts().filter(function (p) {
-        return p.name.toLowerCase().indexOf(q) >= 0 || (p.code || '').toLowerCase().indexOf(q) >= 0 || (p.barcode || '').indexOf(q) >= 0;
+    const products = getProducts().filter(p => p.name.toLowerCase().indexOf(q) >= 0 || (p.code || '').toLowerCase().indexOf(q) >= 0 || (p.barcode || '').indexOf(q) >= 0;
     }).slice(0, 10);
     if (!products.length) {
         results.innerHTML = '<div class="sale-result-item" style="color:var(--muted)">Ничего не найдено</div>';
         results.classList.remove('hidden');
         return;
     }
-    results.innerHTML = products.map(function (p) {
-        return '<div class="sale-result-item" onclick="selectWoProduct(\'' + p.id + '\')">' + '<span class="code-tag">' + (p.code || '') + '</span> ' + p.name + ' <span style="color:var(--muted);font-size:12px">(ост: ' + p.quantity + ')</span></div>';
+    results.innerHTML = products.map(p => '<div class="sale-result-item" onclick="selectWoProduct(\'' + p.id + '\')">' + '<span class="code-tag">' + (p.code || '') + '</span> ' + p.name + ' <span style="color:var(--muted);font-size:12px">(ост: ' + p.quantity + ')</span></div>';
     }).join('');
     results.classList.remove('hidden');
 }
@@ -1200,13 +1166,13 @@ function updateAuditQty(idx, val) {
 
 function tableHTML(headers, rows) {
     let h = '<table><thead><tr>';
-    headers.forEach(function (c) {
+    headers.forEach(c => {
         h += '<th>' + c + '</th>';
     });
     h += '</tr></thead><tbody>';
-    rows.forEach(function (row) {
+    rows.forEach(row => {
         h += '<tr>';
-        row.forEach(function (c) {
+        row.forEach(c => {
             h += '<td>' + c + '</td>';
         });
         h += '</tr>';
@@ -1215,10 +1181,10 @@ function tableHTML(headers, rows) {
 }
 
 function showPaymentMethodModal(callback) {
-    var existing = document.getElementById('payment-method-modal');
+    const existing = document.getElementById('payment-method-modal');
     if (existing)
         existing.remove();
-    var overlay = document.createElement('div');
+    const overlay = document.createElement('div');
     overlay.id = 'payment-method-modal';
     overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center';
     overlay.innerHTML = '<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px 32px;box-shadow:0 8px 30px rgba(0,0,0,0.3);max-width:400px;width:90%">' + '<div style="font-size:16px;font-weight:600;margin-bottom:16px">Выберите способ оплаты</div>' + '<div style="display:flex;flex-direction:column;gap:8px">' + '<button class="btn btn-success btn-lg" onclick="window.selectPaymentMethod(\'cash\')" style="padding:14px;font-size:16px">\uD83D\uDCB5 Наличные</button>' + '<button class="btn btn-lg" onclick="window.selectPaymentMethod(\'kaspi\')" style="padding:14px;font-size:16px;background:#E53935;color:#fff">\uD83D\uDCF1 Kaspi QR</button>' + '<button class="btn btn-primary btn-lg" onclick="window.selectPaymentMethod(\'transfer\')" style="padding:14px;font-size:16px">\uD83C\uDFE6 Банк</button>' + '</div>' + '<button class="btn btn-secondary" style="width:100%;margin-top:12px" onclick="document.getElementById(\'payment-method-modal\').remove()">Отмена</button>' + '</div>';
@@ -1231,8 +1197,8 @@ function showPaymentMethodModal(callback) {
 }
 
 function classicAmountWords(n) {
-    var w = Math.floor(Math.abs(n || 0));
-    var units = [
+    const w = Math.floor(Math.abs(n || 0));
+    const units = [
         '',
         'один',
         'два',
@@ -1244,7 +1210,7 @@ function classicAmountWords(n) {
         'восемь',
         'девять'
     ];
-    var teens = [
+    const teens = [
         'десять',
         'одиннадцать',
         'двенадцать',
@@ -1256,7 +1222,7 @@ function classicAmountWords(n) {
         'восемнадцать',
         'девятнадцать'
     ];
-    var tens = [
+    const tens = [
         '',
         '',
         'двадцать',
@@ -1268,7 +1234,7 @@ function classicAmountWords(n) {
         'восемьдесят',
         'девяносто'
     ];
-    var hundreds = [
+    const hundreds = [
         '',
         'сто',
         'двести',
@@ -1281,9 +1247,8 @@ function classicAmountWords(n) {
         'девятьсот'
     ];
     function numWords(num) {
-        if (num === 0)
-            return '';
-        var res = '';
+        if (num === 0) return '';
+        const res = '';
         if (num >= 1000) {
             res += numWords(Math.floor(num / 1000)) + ' тысяча ';
             num %= 1000;
@@ -1303,27 +1268,27 @@ function classicAmountWords(n) {
             res += units[num] + ' ';
         return res;
     }
-    var t = w % 100, f = t >= 11 && t <= 14 ? 'тенге' : w % 10 === 1 ? 'тенге' : w % 10 >= 2 && w % 10 <= 4 ? 'тенге' : 'тенге';
-    var text = (w === 0 ? 'ноль ' : numWords(w)) + f;
+    const t = w % 100, f = t >= 11 && t <= 14 ? 'тенге' : w % 10 === 1 ? 'тенге' : w % 10 >= 2 && w % 10 <= 4 ? 'тенге' : 'тенге';
+    const text = (w === 0 ? 'ноль ' : numWords(w)) + f;
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function _setPerm(permName, val) {
-    var uid = _permUserId();
+    const uid = _permUserId();
     if (!uid) {
         if (!_pendingPerms)
             setStore('_pendingPerms', Object.assign({}, DEFAULT_PERMISSIONS));
         _pendingPerms[permName] = val;
         return;
     }
-    var data = getUserData(uid);
+    const data = getUserData(uid);
     data.permissions[permName] = val;
     setUserPermissions(uid, data);
 }
 
 function selectAllInGroup(group, on) {
-    var keys = PERMISSION_GROUPS[group] || [];
-    keys.forEach(function (k) {
+    const keys = PERMISSION_GROUPS[group] || [];
+    keys.forEach(k => {
         _setPerm(k, on);
     });
     renderPermissionsEditor(_permUserId());
@@ -1332,18 +1297,18 @@ function selectAllInGroup(group, on) {
 function applyTemplateIndex(idx) {
     closeModal('modal-custom');
     try {
-        var templates = JSON.parse(localStorage.getItem('sanaq_perm_templates_' + (currentStoreId || '')) || '[]');
-        var tpl = templates[idx];
+        const templates = JSON.parse(localStorage.getItem('sanaq_perm_templates_' + (currentStoreId || '')) || '[]');
+        const tpl = templates[idx];
         if (!tpl)
             return;
-        var targetId = _permUserId();
+        const targetId = _permUserId();
         if (!targetId) {
             setStore('_pendingPerms', Object.assign({}, tpl.permissions));
             renderPermissionsEditor(null);
             toast('Шаблон "' + tpl.name + '" применён (будет при создании)', 'ok');
             return;
         }
-        var data = getUserData(targetId);
+        const data = getUserData(targetId);
         data.permissions = Object.assign({}, tpl.permissions);
         setUserPermissions(targetId, data);
         renderPermissionsEditor(targetId);
@@ -1357,7 +1322,7 @@ function togglePromoDiscountType() {
 }
 
 function toggleNotifCenter() {
-    var panel = document.getElementById('notif-panel');
+    const panel = document.getElementById('notif-panel');
     if (panel.style.display === 'flex') {
         panel.style.display = 'none';
         return;
@@ -1377,7 +1342,7 @@ function restoreSidebar() {
 }
 
 function toggleBulkSelectAll(cb) {
-    document.querySelectorAll('.bulk-item').forEach(function (el) {
+    document.querySelectorAll('.bulk-item').forEach(el => {
         el.checked = cb.checked;
         if (cb.checked)
             _bulkSelected.add(el.dataset.id);
@@ -1388,9 +1353,9 @@ function toggleBulkSelectAll(cb) {
 }
 
 function updateBulkBar() {
-    var count = _bulkSelected.size;
-    var bar = document.getElementById('bulk-bar');
-    var counter = document.getElementById('bulk-count');
+    const count = _bulkSelected.size;
+    const bar = document.getElementById('bulk-bar');
+    const counter = document.getElementById('bulk-count');
     if (counter)
         counter.textContent = count;
     if (bar)
@@ -1399,10 +1364,10 @@ function updateBulkBar() {
 
 function clearBulkSelection() {
     _bulkSelected.clear();
-    document.querySelectorAll('.bulk-item').forEach(function (el) {
+    document.querySelectorAll('.bulk-item').forEach(el => {
         el.checked = false;
     });
-    var selAll = document.getElementById('bulk-select-all');
+    const selAll = document.getElementById('bulk-select-all');
     if (selAll)
         selAll.checked = false;
     updateBulkBar();
@@ -1419,17 +1384,17 @@ function bulkChangePrice() {
 }
 
 function applyBulkPrice() {
-    var type = document.getElementById('bulk-price-type').value;
-    var value = parseFloat(document.getElementById('bulk-price-value').value);
+    const type = document.getElementById('bulk-price-type').value;
+    const value = parseFloat(document.getElementById('bulk-price-value').value);
     if (isNaN(value) || value < 0) {
         toast('Введите корректное значение', 'err');
         return;
     }
-    var list = getProducts();
-    var changed = 0;
+    const list = getProducts();
+    const changed = 0;
     list = list.map(function (p) {
         if (_bulkSelected.has(p.id)) {
-            var oldPrice = Number(p.price) || 0;
+            const oldPrice = Number(p.price) || 0;
             switch (type) {
             case 'set':
                 p.price = value;
@@ -1462,8 +1427,8 @@ function bulkDelete() {
         return;
     }
     confirmAction('Массовое удаление', 'Удалить ' + _bulkSelected.size + ' товаров?', function () {
-        var list = getProducts();
-        var deleted = 0;
+        const list = getProducts();
+        const deleted = 0;
         list = list.filter(function (p) {
             if (_bulkSelected.has(p.id)) {
                 deleted++;
@@ -1490,20 +1455,20 @@ function bulkApplyDiscount() {
 }
 
 function applyBulkDiscount() {
-    var value = parseFloat(document.getElementById('bulk-discount-value').value);
+    const value = parseFloat(document.getElementById('bulk-discount-value').value);
     if (isNaN(value) || value <= 0 || value > 100) {
         toast('Введите скидку от 1 до 100%', 'err');
         return;
     }
-    var type = document.getElementById('bulk-discount-type').value;
-    var promos = getPromotions();
-    var now = new Date();
-    var endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    var endStr = endOfMonth.toISOString().slice(0, 10);
-    var added = 0;
-    getProducts().forEach(function (p) {
+    const type = document.getElementById('bulk-discount-type').value;
+    const promos = getPromotions();
+    const now = new Date();
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const endStr = endOfMonth.toISOString().slice(0, 10);
+    const added = 0;
+    getProducts().forEach(p => {
         if (_bulkSelected.has(p.id)) {
-            var existing = promos.findIndex(function (pr) {
+            const existing = promos.findIndex(function (pr) {
                 return pr.productId === p.id && pr.active !== false;
             });
             if (existing >= 0) {
@@ -1540,14 +1505,13 @@ function bulkRemoveDiscount() {
         return;
     }
     confirmAction('Удаление скидок', 'Удалить скидки для ' + _bulkSelected.size + ' товаров?', function () {
-        var promos = getPromotions();
-        var selectedIds = new Set();
-        _bulkSelected.forEach(function (id) {
+        const promos = getPromotions();
+        const selectedIds = new Set();
+        _bulkSelected.forEach(id => {
             selectedIds.add(id);
         });
-        var before = promos.length;
-        promos = promos.filter(function (pr) {
-            return !selectedIds.has(pr.productId);
+        const before = promos.length;
+        promos = promos.filter(pr => !selectedIds.has(pr.productId);
         });
         setPromotions(promos);
         clearBulkSelection();
@@ -1563,8 +1527,8 @@ function openPinSetup() {
 }
 
 function savePinCode() {
-    var pin = document.getElementById('pin-setup-code').value;
-    var confirm = document.getElementById('pin-setup-confirm').value;
+    const pin = document.getElementById('pin-setup-code').value;
+    const confirm = document.getElementById('pin-setup-confirm').value;
     if (pin.length < 4 || pin.length > 6) {
         toast('PIN должен быть 4\u20136 цифр', 'err');
         return;
@@ -1581,17 +1545,17 @@ function savePinCode() {
 }
 
 function checkPinLogin() {
-    var entered = document.getElementById('pin-login-code').value;
-    var userId = _pendingSwitchUserId;
+    const entered = document.getElementById('pin-login-code').value;
+    const userId = _pendingSwitchUserId;
     if (!userId)
         return;
-    var userPin = getUserPin(userId);
+    const userPin = getUserPin(userId);
     if (!userPin) {
         closeModal('modal-pin-login');
         doSwitchUser(_findUserAnywhere(userId));
         return;
     }
-    var target = _findUserAnywhere(userId);
+    const target = _findUserAnywhere(userId);
     if (!target) {
         return;
     }
@@ -1611,12 +1575,12 @@ function toggleScannerAutoClose(cb) {
 function toggleScannerTorch() {
     if (!scannerStream)
         return;
-    var track = scannerStream.getVideoTracks()[0];
+    const track = scannerStream.getVideoTracks()[0];
     if (!track)
         return;
-    var capabilities = track.getCapabilities && track.getCapabilities();
+    const capabilities = track.getCapabilities && track.getCapabilities();
     if (capabilities && capabilities.torch) {
-        var currentlyOn = track.getConstraints && track.getConstraints().torch;
+        const currentlyOn = track.getConstraints && track.getConstraints().torch;
         track.applyConstraints({ advanced: [{ torch: !currentlyOn }] }).catch(function (e) {
             console.warn('[Scanner] Torch error:', e);
         });
@@ -1624,8 +1588,7 @@ function toggleScannerTorch() {
 }
 
 function openQtyPopup(productId) {
-    var item = saleCart.find(function (c) {
-        return c.id === productId;
+    const item = saleCart.find(c => c.id === productId;
     });
     if (!item)
         return;
@@ -1635,22 +1598,21 @@ function openQtyPopup(productId) {
     document.getElementById('qty-popup-input').max = item.maxQty || 9999;
     openModal('modal-qty-popup');
     setTimeout(function () {
-        var inp = document.getElementById('qty-popup-input');
+        const inp = document.getElementById('qty-popup-input');
         inp.focus();
         inp.select();
     }, 150);
 }
 
 function confirmQtyPopup() {
-    var qty = parseInt(document.getElementById('qty-popup-input').value) || 1;
-    var item = saleCart.find(function (c) {
-        return c.id === _qtyPopupProductId;
+    const qty = parseInt(document.getElementById('qty-popup-input').value) || 1;
+    const item = saleCart.find(c => c.id === _qtyPopupProductId;
     });
     if (!item) {
         closeModal('modal-qty-popup');
         return;
     }
-    var maxQty = item.maxQty || 9999;
+    const maxQty = item.maxQty || 9999;
     if (qty > maxQty) {
         toast('На складе всего ' + maxQty + ' шт.', 'err');
         return;
@@ -1661,7 +1623,5 @@ function confirmQtyPopup() {
     renderSaleCart();
     closeModal('modal-qty-popup');
 }
-
-
 
 export { getCurrentStoreName, normalizeCode, levenshtein, generateSearchVariations, generateEAN13, drawEan13Svg, drawCode39Svg, updateMarkup, fmt, fmtShort, fmtDate, fmtDateTime, escapeHtml, esc, todayStr, getFieldValue, createExcelWorkbook, styleExcelCell, saveExcelBuffer, downloadExcelTemplate, readExcelFile, showImportPreview, confirmImport, isToday, closeModal, toggleSidebar, toggleDashLowStock, confirmAction, showSupabaseLogin, getPeriodDateRange, filterByPeriod, card, finCard, setPayment, adjustSelectedQty, removeSelectedItem, checkSelectedPrice, focusSearch, toggleFavoriteFromTable, posRefreshFavorites, openPaymentModal, openItemDiscount, toggleItemDiscountValue, applyItemDiscount, stopTracks, switchUnsoldPeriod, downloadFile, switchAuditsTab, onWoSearch, updateAuditQty, tableHTML, showPaymentMethodModal, classicAmountWords, _setPerm, selectAllInGroup, applyTemplateIndex, togglePromoDiscountType, toggleNotifCenter, restoreSidebar, toggleBulkSelectAll, updateBulkBar, clearBulkSelection, bulkChangePrice, applyBulkPrice, bulkDelete, bulkApplyDiscount, applyBulkDiscount, bulkRemoveDiscount, openPinSetup, savePinCode, checkPinLogin, toggleScannerAutoClose, toggleScannerTorch, openQtyPopup, confirmQtyPopup };

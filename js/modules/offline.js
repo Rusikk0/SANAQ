@@ -1,8 +1,8 @@
 function updateOfflineBanner() {
-    var banner = document.getElementById('offline-banner');
+    const banner = document.getElementById('offline-banner');
     if (!banner)
         return;
-    var pending = window.ApDb ? window.ApDb.getOfflineQueueCount() : 0;
+    const pending = window.ApDb ? window.ApDb.getOfflineQueueCount() : 0;
     if (!navigator.onLine) {
         banner.style.display = 'flex';
         banner.innerHTML = '<span>\uD83D\uDD34 Нет интернета. Данные сохраняются локально.</span>' + (pending ? '<button class="btn btn-sm btn-warning" onclick="window.ApDb.processOfflineQueue()">\uD83D\uDD04 Синхронизировать (' + pending + ')</button>' : '');
@@ -13,8 +13,5 @@ function updateOfflineBanner() {
         banner.style.display = 'none';
     }
 }
-
-
-
 
 export { updateOfflineBanner };

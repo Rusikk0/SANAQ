@@ -1,6 +1,6 @@
-var _services = {};
-var _state = {};
-var _stateGetters = {};
+const _services = {};
+const _state = {};
+const _stateGetters = {};
 
 export function set(name, service) {
     _services[name] = service;
@@ -36,7 +36,7 @@ export function refreshAllState() {
 }
 
 export function requireNow(name) {
-    var s = _services[name];
+    const s = _services[name];
     if (!s) throw new Error('Service not registered: ' + name);
     return s;
 }

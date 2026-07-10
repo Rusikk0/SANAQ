@@ -1,5 +1,5 @@
-function _db() { return window.ApDb || null; }
-function _ds() { return window.DataService || null; }
+const _db = () => (window.ApDb || null);
+const _ds = () => (window.DataService || null);
 
 export function getCategories() { var d = _db(); return d ? d.getCategories() : []; }
 export function getCustomers() { var d = _db(); return d ? d.getCustomers() : []; }

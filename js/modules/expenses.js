@@ -6,10 +6,7 @@ import { openModal, uid, renderDashboard } from './ui.js';
 import { toast } from './notifications.js';
 import { exportSectionToExcel } from './reports.js';
 
-
-function getExpenses() {
-    return window.ApDb ? window.ApDb.getExpenses() : [];
-}
+const getExpenses = () => (window.ApDb ? window.ApDb.getExpenses() : []);
 
 function setExpenses(arr) {
     if (window.ApDb)
@@ -28,8 +25,7 @@ function adminCancelExpenseBtn(e) {
 
 function renderExpenses() {
     const list = getExpenses().slice().reverse();
-    const total = list.filter(isExpenseActive).reduce(function (s, e) {
-        return s + e.amount;
+    const total = list.filter(isExpenseActive).reduce(s, e => s + e.amount;
     }, 0);
     document.getElementById('expenses-total-label').textContent = 'Учтено расходов: ' + fmt(total);
     const cols = [
@@ -100,8 +96,7 @@ function cancelExpenseConfirm(id) {
         toast('Нет доступа', 'err');
         return;
     }
-    const expense = getExpenses().find(function (e) {
-        return e.id === id;
+    const expense = getExpenses().find(e => e.id === id;
     });
     if (!expense || !isExpenseActive(expense)) {
         toast('Расход уже отменён', 'err');
@@ -114,8 +109,7 @@ function cancelExpenseConfirm(id) {
 
 function cancelExpense(id) {
     const list = getExpenses().map(function (e) {
-        if (e.id !== id)
-            return e;
+        if (e.id !== id) return e;
         if (!isExpenseActive(e))
             return e;
         return Object.assign({}, e, {
@@ -135,8 +129,6 @@ function cancelExpense(id) {
 function exportExpensesExcel() {
     exportSectionToExcel('expenses', getExpenses().filter(isExpenseActive), 'SANAQ_Расходы_' + todayStr() + '.xlsx');
 }
-
-
 
 set('isExpenseActive', isExpenseActive);
 export { getExpenses, setExpenses, isExpenseActive, adminCancelExpenseBtn, renderExpenses, openExpenseModal, saveExpense, cancelExpenseConfirm, cancelExpense, exportExpensesExcel };

@@ -1,51 +1,50 @@
 import { DEFAULT_PERMISSIONS } from './constants.js';
 
-
 let currentStoreId = null;
 
 let confirmCallback = null;
 
-var scanBuffer = '';
+const scanBuffer = '';
 
-var scanLastKey = 0;
+const scanLastKey = 0;
 
-var _catDragSrc = null;
+const _catDragSrc = null;
 
-var scannerTarget = null;
+const scannerTarget = null;
 
-var scannerActive = false;
+const scannerActive = false;
 
-var scannerStream = null;
+const scannerStream = null;
 
-var scannerAnimFrame = null;
+const scannerAnimFrame = null;
 
-var _lastScanTime = 0;
+const _lastScanTime = 0;
 
-var _scannerAutoClose = false;
+const _scannerAutoClose = false;
 
-var _scanLoopFn = null;
+const _scanLoopFn = null;
 
-var _pendingPerms = null;
+const _pendingPerms = null;
 
-var _pendingMaxDisc = 0;
+const _pendingMaxDisc = 0;
 
-var _bulkSelected = new Set();
+const _bulkSelected = new Set();
 
-var _currentDocId = null;
+const _currentDocId = null;
 
-var _currentReceiptId = null;
+const _currentReceiptId = null;
 
-var _currentPrintReceiptId = null;
+const _currentPrintReceiptId = null;
 
-var _editingDocTemplateIdx = -1;
+const _editingDocTemplateIdx = -1;
 
-var _cashierStatsData = null;
+const _cashierStatsData = null;
 
-var _shiftStatsData = null;
+const _shiftStatsData = null;
 
-var _templateParentModal = '';
+const _templateParentModal = '';
 
-var _autoRefreshInterval = null;
+const _autoRefreshInterval = null;
 
 export function setStore(name, value) {
     switch (name) {

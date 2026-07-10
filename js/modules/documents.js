@@ -5,30 +5,10 @@ import { getSales, isSaleActive, buildSalePKOHTML, PAY_LABELS, getDeferred, setD
 import { exportAoAToExcel } from './statistics.js';
 import { addDocItemRow, getDocItemsFromTable, getDocumentItems, setDocumentItems } from './products.js';
 
-
-function getDocuments() {
-    return window.ApDb ? window.ApDb.getDocuments() : [];
-}
-
-function setDocuments(arr) {
-    if (window.ApDb)
-        window.ApDb.setDocuments(arr);
-}
-
-function getDocTemplates() {
-    try {
-        return JSON.parse(localStorage.getItem('ap_doc_templates') || '[]');
-    } catch (e) {
-        return [];
-    }
-}
-
-function setDocTemplates(arr) {
-    try {
-        localStorage.setItem('ap_doc_templates', JSON.stringify(arr));
-    } catch (e) {
-    }
-}
+const getDocuments = () => window.ApDb ? window.ApDb.getDocuments() : [];
+const setDocuments = (arr) => { if (window.ApDb) window.ApDb.setDocuments(arr); };
+const getDocTemplates = () => { try { return JSON.parse(localStorage.getItem('ap_doc_templates') || '[]'); } catch (e) { return []; } };
+const setDocTemplates = (arr) => { try { localStorage.setItem('ap_doc_templates', JSON.stringify(arr)); } catch (e) {} };
 
 function openDocTemplateManager() {
     _closeParentModals();
@@ -37,25 +17,22 @@ function openDocTemplateManager() {
 }
 
 function renderDocTemplates() {
-    var list = document.getElementById('doc-templates-list');
+    const list = document.getElementById('doc-templates-list');
     if (!list)
         return;
-    var templates = getDocTemplates();
+    const templates = getDocTemplates();
     if (!templates.length) {
         list.innerHTML = '<div class="empty">Нет сохранённых шаблонов</div>';
         return;
     }
-    list.innerHTML = templates.map(function (t, i) {
-        return '<div class="doc-template-card" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer" onclick="loadDocTemplate(' + i + ')">' + '<div style="display:flex;justify-content:space-between;align-items:center">' + '<div><strong>' + esc(t.name || 'Шаблон ' + (i + 1)) + '</strong><br><span style="font-size:12px;color:var(--muted)">' + esc(t.storeName || '') + (t.bin ? ' \xB7 ' + esc(t.bin) : '') + '</span></div>' + '<div style="display:flex;gap:4px">' + '<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editDocTemplate(' + i + ')">\u270F️</button>' + '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteDocTemplate(' + i + ')">\u2715</button>' + '</div></div></div>';
+    list.innerHTML = templates.map(t, i => '<div class="doc-template-card" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer" onclick="loadDocTemplate(' + i + ')">' + '<div style="display:flex;justify-content:space-between;align-items:center">' + '<div><strong>' + esc(t.name || 'Шаблон ' + (i + 1)) + '</strong><br><span style="font-size:12px;color:var(--muted)">' + esc(t.storeName || '') + (t.bin ? ' \xB7 ' + esc(t.bin) : '') + '</span></div>' + '<div style="display:flex;gap:4px">' + '<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editDocTemplate(' + i + ')">\u270F️</button>' + '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteDocTemplate(' + i + ')">\u2715</button>' + '</div></div></div>';
     }).join('');
 }
 
 function editDocTemplate(idx) {
-    var templates = getDocTemplates();
-    var t = templates[idx] || {};
-    var f = function (id) {
-        return document.getElementById(id);
-    };
+    const templates = getDocTemplates();
+    const t = templates[idx] || {};
+    const f = const id = id => document.getElementById(id);;
     f('tpl-name').value = t.name || '';
     f('tpl-storeName').value = t.storeName || '';
     f('tpl-bin').value = t.bin || '';
@@ -82,7 +59,7 @@ function editDocTemplate(idx) {
 function deleteDocTemplate(idx) {
     if (!confirm('Удалить шаблон?'))
         return;
-    var templates = getDocTemplates();
+    const templates = getDocTemplates();
     templates.splice(idx, 1);
     setDocTemplates(templates);
     renderDocTemplates();
@@ -91,9 +68,7 @@ function deleteDocTemplate(idx) {
 
 function addDocTemplate() {
     window._editingDocTemplateIdx = -1;
-    var f = function (id) {
-        return document.getElementById(id);
-    };
+    const f = const id = id => document.getElementById(id);;
     f('tpl-name').value = '';
     f('tpl-storeName').value = '';
     f('tpl-bin').value = '';
@@ -117,10 +92,8 @@ function addDocTemplate() {
 }
 
 function saveDocTemplate(idx) {
-    var f = function (id) {
-        return document.getElementById(id);
-    };
-    var t = {
+    const f = const id = id => document.getElementById(id);;
+    const t = {
         name: f('tpl-name').value.trim() || 'Шаблон',
         storeName: f('tpl-storeName').value.trim(),
         bin: f('tpl-bin').value.trim(),
@@ -136,7 +109,7 @@ function saveDocTemplate(idx) {
         directorPosition: f('tpl-directorPosition').value.trim(),
         extra: f('tpl-extra').value.trim()
     };
-    var templates = getDocTemplates();
+    const templates = getDocTemplates();
     if (idx >= 0 && idx < templates.length) {
         templates[idx] = t;
     } else {
@@ -150,11 +123,11 @@ function saveDocTemplate(idx) {
 
 function loadDocTemplate(idx) {
     window.loadDocTemplateNewDoc(idx);
-    var templates = getDocTemplates();
-    var t = templates[idx];
+    const templates = getDocTemplates();
+    const t = templates[idx];
     if (!t)
         return;
-    var si = {
+    const si = {
         storeName: t.storeName,
         bin: t.bin,
         iik: t.iik,
@@ -169,7 +142,7 @@ function loadDocTemplate(idx) {
         directorPosition: t.directorPosition,
         extra: t.extra
     };
-    var fields = [
+    const fields = [
         [
             'edit-storeName',
             'storeName'
@@ -223,8 +196,8 @@ function loadDocTemplate(idx) {
             'extra'
         ]
     ];
-    fields.forEach(function (pair) {
-        var el = document.getElementById(pair[0]);
+    fields.forEach(pair => {
+        const el = document.getElementById(pair[0]);
         if (el)
             el.value = si[pair[1]] || '';
     });
@@ -234,8 +207,8 @@ function loadDocTemplate(idx) {
 }
 
 function loadDocTemplateNewDoc(idx) {
-    var templates = getDocTemplates();
-    var t = templates[idx];
+    const templates = getDocTemplates();
+    const t = templates[idx];
     if (!t)
         return;
     try {
@@ -256,7 +229,7 @@ function printInvoice(receiptId) {
             toast('Не указан ID накладной', 'err');
             return;
         }
-        var html = buildInvoiceHTML(receiptId);
+        const html = buildInvoiceHTML(receiptId);
         if (!html && typeof receiptId !== 'string')
             html = buildInvoiceHTML(String(receiptId));
         if (!html) {
@@ -271,11 +244,11 @@ function printInvoice(receiptId) {
 }
 
 function showInvoiceOverlay(html) {
-    var existing = document.getElementById('invoice-overlay');
+    const existing = document.getElementById('invoice-overlay');
     if (existing)
         existing.remove();
-    var printCSS = '@media print{body>*:not(#invoice-overlay){display:none!important}#invoice-overlay{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:auto!important;background:#fff!important;z-index:999999!important;display:block!important;align-items:initial!important;justify-content:initial!important;padding:0!important}#invoice-overlay .no-print{display:none!important}}';
-    var overlay = document.createElement('div');
+    const printCSS = '@media print{body>*:not(#invoice-overlay){display:none!important}#invoice-overlay{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:auto!important;background:#fff!important;z-index:999999!important;display:block!important;align-items:initial!important;justify-content:initial!important;padding:0!important}#invoice-overlay .no-print{display:none!important}}';
+    const overlay = document.createElement('div');
     overlay.id = 'invoice-overlay';
     overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:flex-start;justify-content:center;padding:20px';
     overlay.innerHTML = '<style>' + printCSS + '</style><div id="invoice-print-area" style="background:#fff;max-width:800px;width:100%;max-height:95vh;overflow-y:auto;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.3);padding:30px;position:relative">' + '<div class="no-print" style="position:sticky;top:0;float:right;display:flex;gap:8px;align-items:center;z-index:1;margin-bottom:10px">' + '<button onclick="window.print()" style="padding:8px 20px;font-size:14px;background:#1e40af;color:#fff;border:none;border-radius:6px;cursor:pointer">\uD83D\uDDA8 Печать</button>' + '<button onclick="downloadInvoiceExcel(window._currentPrintReceiptId)" style="padding:8px 20px;font-size:14px;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer">\uD83D\uDCE5 Excel</button>' + '<button onclick="document.getElementById(\'invoice-overlay\').remove()" style="padding:8px 20px;font-size:14px;background:#888;color:#fff;border:none;border-radius:6px;cursor:pointer">\u2715 Закрыть</button>' + '</div>' + html + '</div>';
@@ -288,29 +261,25 @@ function printSalePKO(receiptId) {
             toast('Не указан ID чека', 'err');
             return;
         }
-        var allSales = getSales().filter(isSaleActive);
-        var sales = allSales.filter(function (s) {
-            return s.receiptId === receiptId;
+        const allSales = getSales().filter(isSaleActive);
+        const sales = allSales.filter(s => s.receiptId === receiptId;
         });
         if (!sales.length)
-            sales = allSales.filter(function (s) {
-                return s.id === receiptId;
+            sales = allSales.filter(s => s.id === receiptId;
             });
         if (!sales.length)
-            sales = allSales.filter(function (s) {
-                return String(s.receiptId) === String(receiptId) || String(s.id) === String(receiptId);
+            sales = allSales.filter(s => String(s.receiptId) === String(receiptId) || String(s.id) === String(receiptId);
             });
         if (!sales.length) {
             toast('Продажа не найдена', 'err');
             return;
         }
-        var first = sales[0];
-        var store = window.ApAuth && window.ApAuth.getCurrentStore();
-        var storeName = store ? store.storeName : 'SANAQ';
-        var total = sales.reduce(function (sum, s) {
-            return sum + (Number(s.total) || 0);
+        const first = sales[0];
+        const store = window.ApAuth && window.ApAuth.getCurrentStore();
+        const storeName = store ? store.storeName : 'SANAQ';
+        const total = sales.reduce(sum, s => sum + (Number(s.total) || 0);
         }, 0);
-        var html = buildSalePKOHTML(first, receiptId, storeName, total);
+        const html = buildSalePKOHTML(first, receiptId, storeName, total);
         window._currentPrintReceiptId = receiptId;
         showInvoiceOverlay(html);
     } catch (e) {
@@ -323,32 +292,28 @@ async function downloadInvoiceExcel(receiptId) {
         toast('ID накладной не указан', 'err');
         return;
     }
-    var allSales = getSales().filter(isSaleActive);
-    var sales = allSales.filter(function (s) {
-        return s.receiptId === receiptId;
+    const allSales = getSales().filter(isSaleActive);
+    const sales = allSales.filter(s => s.receiptId === receiptId;
     });
     if (!sales.length)
-        sales = allSales.filter(function (s) {
-            return s.id === receiptId;
+        sales = allSales.filter(s => s.id === receiptId;
         });
     if (!sales.length)
-        sales = allSales.filter(function (s) {
-            return String(s.receiptId) === String(receiptId) || String(s.id) === String(receiptId);
+        sales = allSales.filter(s => String(s.receiptId) === String(receiptId) || String(s.id) === String(receiptId);
         });
     if (!sales.length) {
         toast('Нет данных для экспорта', 'err');
         return;
     }
-    var first = sales[0];
-    var store = window.ApAuth && window.ApAuth.getCurrentStore();
-    var storeName = store ? store.storeName : 'SANAQ';
-    var bin = localStorage.getItem('ap_store_bin') || '';
-    var total = sales.reduce(function (sum, s) {
-        return sum + (Number(s.total) || 0);
+    const first = sales[0];
+    const store = window.ApAuth && window.ApAuth.getCurrentStore();
+    const storeName = store ? store.storeName : 'SANAQ';
+    const bin = localStorage.getItem('ap_store_bin') || '';
+    const total = sales.reduce(sum, s => sum + (Number(s.total) || 0);
     }, 0);
-    var pay = PAY_LABELS[first.payment] || first.payment || '';
+    const pay = PAY_LABELS[first.payment] || first.payment || '';
     if (first.payment === 'mixed') {
-        var pts = [];
+        const pts = [];
         if (Number(first.cashAmount) > 0)
             pts.push('нал:' + fmtShort(first.cashAmount));
         if (Number(first.kaspiAmount) > 0)
@@ -358,7 +323,7 @@ async function downloadInvoiceExcel(receiptId) {
         if (pts.length)
             pay = pts.join(' ');
     }
-    var headers = [
+    const headers = [
         '\u2116',
         'Код товара',
         'Наименование',
@@ -366,7 +331,7 @@ async function downloadInvoiceExcel(receiptId) {
         'Цена',
         'Сумма'
     ];
-    var widths = [
+    const widths = [
         6,
         18,
         42,
@@ -374,8 +339,7 @@ async function downloadInvoiceExcel(receiptId) {
         14,
         16
     ];
-    var rows = sales.map(function (s, i) {
-        return [
+    const rows = sales.map(s, i => [
             i + 1,
             s.productCode || '',
             s.productName || '',
@@ -384,7 +348,7 @@ async function downloadInvoiceExcel(receiptId) {
             Number(s.total) || 0
         ];
     });
-    var hdrRow = [
+    const hdrRow = [
         storeName + ' \u2014 Накладная \u2116 ' + receiptId.slice(-6),
         '',
         '',
@@ -392,7 +356,7 @@ async function downloadInvoiceExcel(receiptId) {
         '',
         ''
     ];
-    var infoRow1 = [
+    const infoRow1 = [
         'Дата: ' + fmtDate(first.date),
         '',
         'Кассир: ' + (first.userName || '\u2014'),
@@ -400,7 +364,7 @@ async function downloadInvoiceExcel(receiptId) {
         '',
         ''
     ];
-    var infoRow2 = [
+    const infoRow2 = [
         bin ? 'БИН/ИИН: ' + bin : '',
         '',
         'Оплата: ' + pay,
@@ -408,7 +372,7 @@ async function downloadInvoiceExcel(receiptId) {
         '',
         ''
     ];
-    var totalRow = [
+    const totalRow = [
         '',
         '',
         '',
@@ -417,12 +381,12 @@ async function downloadInvoiceExcel(receiptId) {
         total
     ];
     if (typeof ExcelJS !== 'undefined') {
-        var wb = new ExcelJS.Workbook();
+        const wb = new ExcelJS.Workbook();
         wb.creator = 'SANAQ';
         wb.created = new Date();
-        var ws = wb.addWorksheet('Накладная', { views: [{ showGridLines: false }] });
+        const ws = wb.addWorksheet('Накладная', { views: [{ showGridLines: false }] });
         ws.properties.defaultRowHeight = 20;
-        var t = ws.addRow(hdrRow);
+        const t = ws.addRow(hdrRow);
         t.height = 30;
         ws.mergeCells(1, 1, 1, 6);
         styleExcelCell(t.getCell(1), {
@@ -437,7 +401,7 @@ async function downloadInvoiceExcel(receiptId) {
                 vertical: 'middle'
             }
         });
-        var i1 = ws.addRow(infoRow1);
+        const i1 = ws.addRow(infoRow1);
         ws.mergeCells(2, 1, 2, 2);
         ws.mergeCells(2, 3, 2, 4);
         i1.height = 20;
@@ -450,7 +414,7 @@ async function downloadInvoiceExcel(receiptId) {
                 alignment: { vertical: 'middle' }
             });
         });
-        var i2 = ws.addRow(infoRow2);
+        const i2 = ws.addRow(infoRow2);
         ws.mergeCells(3, 1, 3, 2);
         ws.mergeCells(3, 3, 3, 4);
         i2.height = 20;
@@ -464,7 +428,7 @@ async function downloadInvoiceExcel(receiptId) {
             });
         });
         ws.addRow([]);
-        var th = ws.addRow(headers);
+        const th = ws.addRow(headers);
         th.height = 24;
         th.eachCell(function (c, ci) {
             styleExcelCell(c, {
@@ -492,9 +456,9 @@ async function downloadInvoiceExcel(receiptId) {
                 }
             });
         });
-        var alt = false;
-        rows.forEach(function (rd) {
-            var rw = ws.addRow(rd);
+        const alt = false;
+        rows.forEach(rd => {
+            const rw = ws.addRow(rd);
             rw.eachCell(function (c, ci) {
                 styleExcelCell(c, {
                     font: {
@@ -540,7 +504,7 @@ async function downloadInvoiceExcel(receiptId) {
             alt = !alt;
         });
         ws.addRow([]);
-        var totRow = ws.addRow(totalRow);
+        const totRow = ws.addRow(totalRow);
         ws.mergeCells(totRow.number, 1, totRow.number, 5);
         totRow.eachCell(function (c, ci) {
             styleExcelCell(c, {
@@ -568,10 +532,10 @@ async function downloadInvoiceExcel(receiptId) {
             if (ci === 6)
                 c.numFmt = '#,##0';
         });
-        widths.forEach(function (w, i) {
+        widths.forEach(w, i => {
             ws.getColumn(i + 1).width = w;
         });
-        var buffer;
+        const buffer;
         try { buffer = await wb.xlsx.writeBuffer(); } catch (e) { toast('Ошибка создания Excel: ' + e.message, 'err'); return; }
         saveExcelBuffer(buffer, 'Nakladnaya_' + receiptId.slice(-6) + '.xlsx');
         toast('Excel файл скачан', 'ok');
@@ -581,26 +545,23 @@ async function downloadInvoiceExcel(receiptId) {
 }
 
 function renderDocuments() {
-    var docs = getDocuments();
-    var search = (document.getElementById('doc-search') || {}).value || '';
-    var typeFilter = (document.getElementById('doc-type-filter') || {}).value || 'all';
-    var statusFilter = (document.getElementById('doc-status-filter') || {}).value || 'all';
-    var filtered = docs.filter(function (d) {
-        var dt = d.type || d.docType || '';
-        if (typeFilter !== 'all' && dt !== typeFilter)
-            return false;
-        if (statusFilter !== 'all' && d.status !== statusFilter)
-            return false;
+    const docs = getDocuments();
+    const search = (document.getElementById('doc-search') || {}).value || '';
+    const typeFilter = (document.getElementById('doc-type-filter') || {}).value || 'all';
+    const statusFilter = (document.getElementById('doc-status-filter') || {}).value || 'all';
+    const filtered = docs.filter(function (d) {
+        const dt = d.type || d.docType || '';
+        if (typeFilter !== 'all' && dt !== typeFilter) return false;
+        if (statusFilter !== 'all' && d.status !== statusFilter) return false;
         if (search) {
-            var s = search.toLowerCase();
-            var numMatch = (d.number || d.docNumber || '').toLowerCase().indexOf(s) >= 0;
-            var clientMatch = (d.clientName || d.recipientName || d.customerName || '').toLowerCase().indexOf(s) >= 0;
-            if (!numMatch && !clientMatch)
-                return false;
+            const s = search.toLowerCase();
+            const numMatch = (d.number || d.docNumber || '').toLowerCase().indexOf(s) >= 0;
+            const clientMatch = (d.clientName || d.recipientName || d.customerName || '').toLowerCase().indexOf(s) >= 0;
+            if (!numMatch && !clientMatch) return false;
         }
         return true;
     });
-    var el = document.getElementById('documents-table');
+    const el = document.getElementById('documents-table');
     if (!el)
         return;
     if (!filtered.length) {
@@ -616,12 +577,12 @@ function renderDocuments() {
         'Дата',
         'Действия'
     ], filtered.map(function (d) {
-        var dt = d.type || d.docType || '';
-        var typeLabel = dt === 'invoice' ? 'Счет на оплату' : dt === 'z2' ? 'Накладная З-2' : dt === 'invoice_sf' ? '\uD83D\uDCC4 Счёт-фактура' : dt === 'deferred' ? '\uD83D\uDCCB Отложенный' : dt || '\u2014';
-        var statusLabel = d.status === 'pending' ? '<span class="badge badge-warn">Ожидает</span>' : d.status === 'paid' ? '<span class="badge badge-ok">Оплачено</span>' : d.status === 'issued' ? '<span class="badge badge-info">Выписано</span>' : d.status === 'cancelled' ? '<span class="badge badge-danger">Отменено</span>' : d.status;
-        var client = d.clientName || d.recipientName || d.customerName || '\u2014';
-        var docNum = d.number || d.docNumber || '\u2116' + d.id.slice(0, 6);
-        var actions = '<div style="display:flex;gap:4px;flex-wrap:nowrap">' + '<button class="btn btn-secondary btn-sm" onclick="openDocumentView(\'' + d.id + '\')" title="Открыть">\uD83D\uDC41</button>' + '<button class="btn btn-warning btn-sm" onclick="openDocumentEditById(\'' + d.id + '\')" title="Редактировать">\u270F️</button>' + '<button class="btn btn-info btn-sm" onclick="duplicateDocument(\'' + d.id + '\')" title="Дублировать">\uD83D\uDCCB</button>' + '<button class="btn btn-info btn-sm" onclick="downloadDocumentPdf(\'' + d.id + '\')" title="Скачать PDF">\uD83D\uDCC4</button>' + '<button class="btn btn-success btn-sm" onclick="downloadDocumentExcelById(\'' + d.id + '\')" title="Скачать Excel">\uD83D\uDCCA</button>' + '<button class="btn btn-secondary btn-sm" onclick="printDocumentById(\'' + d.id + '\')" title="Печать">\uD83D\uDDA8️</button>' + '<button class="btn btn-danger btn-sm" onclick="deleteDocument(\'' + d.id + '\')" title="Удалить">\u274C</button>' + '</div>';
+        const dt = d.type || d.docType || '';
+        const typeLabel = dt === 'invoice' ? 'Счет на оплату' : dt === 'z2' ? 'Накладная З-2' : dt === 'invoice_sf' ? '\uD83D\uDCC4 Счёт-фактура' : dt === 'deferred' ? '\uD83D\uDCCB Отложенный' : dt || '\u2014';
+        const statusLabel = d.status === 'pending' ? '<span class="badge badge-warn">Ожидает</span>' : d.status === 'paid' ? '<span class="badge badge-ok">Оплачено</span>' : d.status === 'issued' ? '<span class="badge badge-info">Выписано</span>' : d.status === 'cancelled' ? '<span class="badge badge-danger">Отменено</span>' : d.status;
+        const client = d.clientName || d.recipientName || d.customerName || '\u2014';
+        const docNum = d.number || d.docNumber || '\u2116' + d.id.slice(0, 6);
+        const actions = '<div style="display:flex;gap:4px;flex-wrap:nowrap">' + '<button class="btn btn-secondary btn-sm" onclick="openDocumentView(\'' + d.id + '\')" title="Открыть">\uD83D\uDC41</button>' + '<button class="btn btn-warning btn-sm" onclick="openDocumentEditById(\'' + d.id + '\')" title="Редактировать">\u270F️</button>' + '<button class="btn btn-info btn-sm" onclick="duplicateDocument(\'' + d.id + '\')" title="Дублировать">\uD83D\uDCCB</button>' + '<button class="btn btn-info btn-sm" onclick="downloadDocumentPdf(\'' + d.id + '\')" title="Скачать PDF">\uD83D\uDCC4</button>' + '<button class="btn btn-success btn-sm" onclick="downloadDocumentExcelById(\'' + d.id + '\')" title="Скачать Excel">\uD83D\uDCCA</button>' + '<button class="btn btn-secondary btn-sm" onclick="printDocumentById(\'' + d.id + '\')" title="Печать">\uD83D\uDDA8️</button>' + '<button class="btn btn-danger btn-sm" onclick="deleteDocument(\'' + d.id + '\')" title="Удалить">\u274C</button>' + '</div>';
         return [
             '<a href="#" onclick="openDocumentView(\'' + d.id + '\');return false">' + docNum + '</a>',
             typeLabel,
@@ -649,8 +610,8 @@ function deleteDocument(docId) {
         if (window.ApDb && typeof window.ApDb.deleteDocument === 'function') {
             window.ApDb.deleteDocument(docId);
         } else {
-            var docs = getDocuments();
-            var idx = docs.findIndex(function (d) {
+            const docs = getDocuments();
+            const idx = docs.findIndex(function (d) {
                 return d.id === docId;
             });
             if (idx >= 0) {
@@ -670,15 +631,14 @@ function duplicateDocument(docId) {
         toast('ID документа не указан', 'err');
         return;
     }
-    var docs = getDocuments();
-    var src = docs.find(function (d) {
-        return d.id === docId;
+    const docs = getDocuments();
+    const src = docs.find(d => d.id === docId;
     });
     if (!src) {
         toast('Документ не найден', 'err');
         return;
     }
-    var copy = JSON.parse(JSON.stringify(src));
+    const copy = JSON.parse(JSON.stringify(src));
     copy.id = uid();
     copy.number = '';
     copy.status = 'pending';
@@ -715,17 +675,15 @@ function openCreateInvoiceModal() {
     openModal('modal-create-invoice');
     document.getElementById('invoice-items-tbody').innerHTML = '';
     addInvoiceItemRow();
-    var deferred = getDeferred().filter(function (d) {
-        return d.status === 'pending';
+    const deferred = getDeferred().filter(d => d.status === 'pending';
     });
-    var container = document.getElementById('deferred-checkboxes');
+    const container = document.getElementById('deferred-checkboxes');
     if (container) {
         if (!deferred.length) {
             container.innerHTML = '<div style="color:var(--text-muted);padding:8px">Нет отложенных товаров</div>';
         } else {
             container.innerHTML = deferred.map(function (d) {
-                var detail = (d.items || []).map(function (it) {
-                    return '<div style="padding:2px 0 2px 24px;font-size:0.9em;color:var(--text-muted)">' + esc(it.productName) + ' \xD7 ' + it.quantity + ' = ' + fmt(it.total) + '</div>';
+                const detail = (d.items || []).map(it => '<div style="padding:2px 0 2px 24px;font-size:0.9em;color:var(--text-muted)">' + esc(it.productName) + ' \xD7 ' + it.quantity + ' = ' + fmt(it.total) + '</div>';
                 }).join('');
                 return '<div style="padding:6px 0;border-bottom:1px solid var(--border)">' + '<label style="display:flex;align-items:center;gap:8px;cursor:pointer">' + '<input type="checkbox" value="' + d.id + '" onchange="updateInvoiceTypeUI()"> ' + '<strong>' + esc(d.customerName || 'Без клиента') + '</strong> \u2014 ' + fmt(d.total) + ' (' + (d.items ? d.items.length : 0) + ' поз.)</label>' + detail + '</div>';
             }).join('');
@@ -739,17 +697,15 @@ function openCreateZ2Modal() {
     openModal('modal-create-z2');
     document.getElementById('z2-items-tbody').innerHTML = '';
     addZ2ItemRow();
-    var deferred = getDeferred().filter(function (d) {
-        return d.status === 'pending';
+    const deferred = getDeferred().filter(d => d.status === 'pending';
     });
-    var container = document.getElementById('z2-checkboxes');
+    const container = document.getElementById('z2-checkboxes');
     if (container) {
         if (!deferred.length) {
             container.innerHTML = '<div style="color:var(--text-muted);padding:8px">Нет отложенных товаров</div>';
         } else {
             container.innerHTML = deferred.map(function (d) {
-                var detail = (d.items || []).map(function (it) {
-                    return '<div style="padding:2px 0 2px 24px;font-size:0.9em;color:var(--text-muted)">' + esc(it.productName) + ' \xD7 ' + it.quantity + ' = ' + fmt(it.total) + '</div>';
+                const detail = (d.items || []).map(it => '<div style="padding:2px 0 2px 24px;font-size:0.9em;color:var(--text-muted)">' + esc(it.productName) + ' \xD7 ' + it.quantity + ' = ' + fmt(it.total) + '</div>';
                 }).join('');
                 return '<div style="padding:6px 0;border-bottom:1px solid var(--border)">' + '<label style="display:flex;align-items:center;gap:8px;cursor:pointer">' + '<input type="checkbox" value="' + d.id + '" onchange="updateZ2TypeUI()"> ' + '<strong>' + esc(d.customerName || 'Без клиента') + '</strong> \u2014 ' + fmt(d.total) + ' (' + (d.items ? d.items.length : 0) + ' поз.)</label>' + detail + '</div>';
             }).join('');
@@ -760,9 +716,9 @@ function openCreateZ2Modal() {
 }
 
 function updateInvoiceTypeUI() {
-    var type = document.getElementById('invoice-type').value;
-    var manual = document.getElementById('invoice-manual-input');
-    var deferredSel = document.getElementById('invoice-deferred-select');
+    const type = document.getElementById('invoice-type').value;
+    const manual = document.getElementById('invoice-manual-input');
+    const deferredSel = document.getElementById('invoice-deferred-select');
     if (manual)
         manual.style.display = type === 'manual' ? '' : 'none';
     if (deferredSel)
@@ -770,9 +726,9 @@ function updateInvoiceTypeUI() {
 }
 
 function updateZ2TypeUI() {
-    var type = document.getElementById('z2-type').value;
-    var manual = document.getElementById('z2-manual-input');
-    var deferredSel = document.getElementById('z2-deferred-select');
+    const type = document.getElementById('z2-type').value;
+    const manual = document.getElementById('z2-manual-input');
+    const deferredSel = document.getElementById('z2-deferred-select');
     if (manual)
         manual.style.display = type === 'manual' ? '' : 'none';
     if (deferredSel)
@@ -792,23 +748,23 @@ function addSFItemRow() {
 }
 
 function saveNewInvoice() {
-    var type = document.getElementById('invoice-type').value;
-    var items = [];
-    var idsToRemove = [];
+    const type = document.getElementById('invoice-type').value;
+    const items = [];
+    const idsToRemove = [];
     if (type === 'deferred') {
-        var checks = document.querySelectorAll('#deferred-checkboxes input:checked');
+        const checks = document.querySelectorAll('#deferred-checkboxes input:checked');
         if (!checks.length) {
             toast('Выберите отложенные товары', 'err');
             return;
         }
-        var deferred = getDeferred();
-        var checkedIds = [];
-        checks.forEach(function (cb) {
+        const deferred = getDeferred();
+        const checkedIds = [];
+        checks.forEach(cb => {
             checkedIds.push(cb.value);
         });
-        deferred.forEach(function (d) {
+        deferred.forEach(d => {
             if (checkedIds.indexOf(d.id) >= 0) {
-                (d.items || []).forEach(function (it) {
+                (d.items || []).forEach(it => {
                     items.push({
                         productCode: it.productCode,
                         productName: it.productName,
@@ -827,13 +783,13 @@ function saveNewInvoice() {
             return;
         }
     }
-    var customerName = document.getElementById('invoice-customer-name').value.trim();
-    var customerPhone = document.getElementById('invoice-customer-phone').value.trim();
-    var docs = getDocuments();
-    var docItems = getDocumentItems();
-    var templateMeta = {};
+    const customerName = document.getElementById('invoice-customer-name').value.trim();
+    const customerPhone = document.getElementById('invoice-customer-phone').value.trim();
+    const docs = getDocuments();
+    const docItems = getDocumentItems();
+    const templateMeta = {};
     try {
-        var tpl = JSON.parse(localStorage.getItem('ap_selected_template') || 'null');
+        const tpl = JSON.parse(localStorage.getItem('ap_selected_template') || 'null');
         if (tpl) {
             templateMeta = {
                 storeName: tpl.storeName,
@@ -853,20 +809,18 @@ function saveNewInvoice() {
         }
     } catch (e) {
     }
-    var docId = uid();
+    const docId = uid();
     if (type === 'deferred' && idsToRemove.length === 1) {
         docId = idsToRemove[0];
         docs = docs.map(function (d) {
-            if (d.id !== docId)
-                return d;
+            if (d.id !== docId) return d;
             return Object.assign({}, d, {
                 type: 'invoice',
                 docType: 'invoice',
                 items: items,
                 clientName: customerName,
                 clientPhone: customerPhone,
-                total: items.reduce(function (s, it) {
-                    return s + (it.total || it.unitPrice * it.quantity);
+                total: items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
                 }, 0),
                 status: 'pending',
                 date: new Date().toISOString(),
@@ -891,8 +845,7 @@ function saveNewInvoice() {
             items: items,
             clientName: customerName,
             clientPhone: customerPhone,
-            total: items.reduce(function (s, it) {
-                return s + (it.total || it.unitPrice * it.quantity);
+            total: items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
             }, 0),
             status: 'pending',
             date: new Date().toISOString(),
@@ -900,7 +853,7 @@ function saveNewInvoice() {
             meta: { storeInfo: templateMeta }
         });
     } else {
-        var doc = {
+        const doc = {
             id: docId,
             type: 'invoice',
             docType: 'invoice',
@@ -909,8 +862,7 @@ function saveNewInvoice() {
             items: items,
             clientName: customerName,
             clientPhone: customerPhone,
-            total: items.reduce(function (s, it) {
-                return s + (it.total || it.unitPrice * it.quantity);
+            total: items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
             }, 0),
             status: 'pending',
             date: new Date().toISOString(),
@@ -920,7 +872,7 @@ function saveNewInvoice() {
         docs.unshift(doc);
     }
     setDocuments(docs);
-    items.forEach(function (it) {
+    items.forEach(it => {
         docItems.push({
             id: uid(),
             documentId: docId,
@@ -937,8 +889,8 @@ function saveNewInvoice() {
     });
     setDocumentItems(docItems);
     if (idsToRemove.length) {
-        var allDef = getDeferred();
-        allDef.forEach(function (d) {
+        const allDef = getDeferred();
+        allDef.forEach(d => {
             if (idsToRemove.indexOf(d.id) >= 0) {
                 d.status = 'completed';
                 d.completedAt = new Date().toISOString();
@@ -956,23 +908,23 @@ function saveNewInvoice() {
 }
 
 function saveNewZ2() {
-    var type = document.getElementById('z2-type').value;
-    var items = [];
-    var idsToRemove = [];
+    const type = document.getElementById('z2-type').value;
+    const items = [];
+    const idsToRemove = [];
     if (type === 'deferred') {
-        var checks = document.querySelectorAll('#z2-checkboxes input:checked');
+        const checks = document.querySelectorAll('#z2-checkboxes input:checked');
         if (!checks.length) {
             toast('Выберите отложенные товары', 'err');
             return;
         }
-        var deferred = getDeferred();
-        var checkedIds = [];
-        checks.forEach(function (cb) {
+        const deferred = getDeferred();
+        const checkedIds = [];
+        checks.forEach(cb => {
             checkedIds.push(cb.value);
         });
-        deferred.forEach(function (d) {
+        deferred.forEach(d => {
             if (checkedIds.indexOf(d.id) >= 0) {
-                (d.items || []).forEach(function (it) {
+                (d.items || []).forEach(it => {
                     items.push({
                         productCode: it.productCode,
                         productName: it.productName,
@@ -991,12 +943,12 @@ function saveNewZ2() {
             return;
         }
     }
-    var recipientName = document.getElementById('z2-recipient-name').value.trim();
-    var docs = getDocuments();
-    var docItems = getDocumentItems();
-    var templateMeta = {};
+    const recipientName = document.getElementById('z2-recipient-name').value.trim();
+    const docs = getDocuments();
+    const docItems = getDocumentItems();
+    const templateMeta = {};
     try {
-        var tpl = JSON.parse(localStorage.getItem('ap_selected_template') || 'null');
+        const tpl = JSON.parse(localStorage.getItem('ap_selected_template') || 'null');
         if (tpl) {
             templateMeta = {
                 storeName: tpl.storeName,
@@ -1016,19 +968,17 @@ function saveNewZ2() {
         }
     } catch (e) {
     }
-    var docId = uid();
+    const docId = uid();
     if (type === 'deferred' && idsToRemove.length === 1) {
         docId = idsToRemove[0];
         docs = docs.map(function (d) {
-            if (d.id !== docId)
-                return d;
+            if (d.id !== docId) return d;
             return Object.assign({}, d, {
                 type: 'z2',
                 docType: 'z2',
                 items: items,
                 recipientName: recipientName,
-                total: items.reduce(function (s, it) {
-                    return s + (it.total || it.unitPrice * it.quantity);
+                total: items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
                 }, 0),
                 status: 'pending',
                 date: new Date().toISOString(),
@@ -1052,8 +1002,7 @@ function saveNewZ2() {
             docNumber: '',
             items: items,
             recipientName: recipientName,
-            total: items.reduce(function (s, it) {
-                return s + (it.total || it.unitPrice * it.quantity);
+            total: items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
             }, 0),
             status: 'pending',
             date: new Date().toISOString(),
@@ -1061,7 +1010,7 @@ function saveNewZ2() {
             meta: { storeInfo: templateMeta }
         });
     } else {
-        var doc = {
+        const doc = {
             id: docId,
             type: 'z2',
             docType: 'z2',
@@ -1069,8 +1018,7 @@ function saveNewZ2() {
             docNumber: '',
             items: items,
             recipientName: recipientName,
-            total: items.reduce(function (s, it) {
-                return s + (it.total || it.unitPrice * it.quantity);
+            total: items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
             }, 0),
             status: 'pending',
             date: new Date().toISOString(),
@@ -1080,7 +1028,7 @@ function saveNewZ2() {
         docs.unshift(doc);
     }
     setDocuments(docs);
-    items.forEach(function (it) {
+    items.forEach(it => {
         docItems.push({
             id: uid(),
             documentId: docId,
@@ -1097,8 +1045,8 @@ function saveNewZ2() {
     });
     setDocumentItems(docItems);
     if (idsToRemove.length) {
-        var allDef = getDeferred();
-        allDef.forEach(function (d) {
+        const allDef = getDeferred();
+        allDef.forEach(d => {
             if (idsToRemove.indexOf(d.id) >= 0) {
                 d.status = 'completed';
                 d.completedAt = new Date().toISOString();
@@ -1124,10 +1072,10 @@ function openCreateSFFModal() {
 }
 
 function saveNewSFF() {
-    var customerName = document.getElementById('sf-customer-name').value.trim();
-    var customerIIN = document.getElementById('sf-customer-iin').value.trim();
-    var customerAddress = document.getElementById('sf-customer-address').value.trim();
-    var items = getDocItemsFromTable('sf-items-tbody');
+    const customerName = document.getElementById('sf-customer-name').value.trim();
+    const customerIIN = document.getElementById('sf-customer-iin').value.trim();
+    const customerAddress = document.getElementById('sf-customer-address').value.trim();
+    const items = getDocItemsFromTable('sf-items-tbody');
     if (!customerName) {
         toast('Введите покупателя', 'err');
         return;
@@ -1136,9 +1084,9 @@ function saveNewSFF() {
         toast('Добавьте товары', 'err');
         return;
     }
-    var templateMeta = {};
+    const templateMeta = {};
     try {
-        var tpl = JSON.parse(localStorage.getItem('ap_selected_template') || 'null');
+        const tpl = JSON.parse(localStorage.getItem('ap_selected_template') || 'null');
         if (tpl) {
             templateMeta = {
                 storeName: tpl.storeName,
@@ -1158,13 +1106,12 @@ function saveNewSFF() {
         }
     } catch (e) {
     }
-    var docId = uid();
-    var docs = getDocuments();
-    var docItems = getDocumentItems();
-    var total = items.reduce(function (s, it) {
-        return s + (it.total || it.unitPrice * it.quantity);
+    const docId = uid();
+    const docs = getDocuments();
+    const docItems = getDocumentItems();
+    const total = items.reduce(s, it => s + (it.total || it.unitPrice * it.quantity);
     }, 0);
-    var doc = {
+    const doc = {
         id: docId,
         type: 'invoice_sf',
         docType: 'invoice_sf',
@@ -1186,7 +1133,7 @@ function saveNewSFF() {
     };
     docs.unshift(doc);
     setDocuments(docs);
-    items.forEach(function (it) {
+    items.forEach(it => {
         docItems.push({
             id: uid(),
             documentId: docId,
@@ -1215,9 +1162,9 @@ function openCreatePKOModal() {
 }
 
 function saveNewPKO() {
-    var payer = document.getElementById('pko-payer').value.trim();
-    var basis = document.getElementById('pko-basis').value.trim();
-    var amount = parseFloat(document.getElementById('pko-amount').value) || 0;
+    const payer = document.getElementById('pko-payer').value.trim();
+    const basis = document.getElementById('pko-basis').value.trim();
+    const amount = parseFloat(document.getElementById('pko-amount').value) || 0;
     if (!payer) {
         toast('Введите от кого получено', 'err');
         return;
@@ -1230,9 +1177,9 @@ function saveNewPKO() {
         toast('Введите сумму', 'err');
         return;
     }
-    var docId = uid();
-    var docs = getDocuments();
-    var doc = {
+    const docId = uid();
+    const docs = getDocuments();
+    const doc = {
         id: docId,
         type: 'pko',
         docType: 'pko',
@@ -1254,28 +1201,28 @@ function saveNewPKO() {
 }
 
 function buildClassicInvoiceHTML(doc) {
-    var si = doc.meta && doc.meta.storeInfo || {};
-    var storeName = si.storeName || 'Организация';
-    var bin = si.bin || '\u2014';
-    var iik = si.iik || '\u2014';
-    var bik = si.bik || '\u2014';
-    var bankName = si.bankName || '\u2014';
-    var kbe = si.kbe || '\u2014';
-    var beneficiary = si.beneficiary || storeName;
-    var paymentCode = si.paymentCode || '';
-    var address = si.address || '';
-    var phone = si.phone || '';
-    var directorName = si.directorName || '';
-    var directorPosition = si.directorPosition || 'Директор';
-    var extraInfo = si.extra || '';
-    var logoData = si.logo || '';
-    var contractText = doc.meta && doc.meta.contract || 'Без договора';
-    var amountWords = window.classicAmountWords(doc.total);
-    var totalQty = 0;
-    (doc.items || []).forEach(function (it) {
+    const si = doc.meta && doc.meta.storeInfo || {};
+    const storeName = si.storeName || 'Организация';
+    const bin = si.bin || '\u2014';
+    const iik = si.iik || '\u2014';
+    const bik = si.bik || '\u2014';
+    const bankName = si.bankName || '\u2014';
+    const kbe = si.kbe || '\u2014';
+    const beneficiary = si.beneficiary || storeName;
+    const paymentCode = si.paymentCode || '';
+    const address = si.address || '';
+    const phone = si.phone || '';
+    const directorName = si.directorName || '';
+    const directorPosition = si.directorPosition || 'Директор';
+    const extraInfo = si.extra || '';
+    const logoData = si.logo || '';
+    const contractText = doc.meta && doc.meta.contract || 'Без договора';
+    const amountWords = window.classicAmountWords(doc.total);
+    const totalQty = 0;
+    (doc.items || []).forEach(it => {
         totalQty += Number(it.quantity || 0);
     });
-    var h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:980px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
+    const h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:980px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
     h += '<div style="font-size:11px;line-height:1.4;padding:8px 12px;border:1px solid #000;background:#fafafa;margin-bottom:16px">' + 'Внимание! Оплата данного счета означает согласие с условиями поставки товара. Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе. Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и документов, удостоверяющих личность.' + '</div>';
     h += '<div style="text-align:center;margin-bottom:20px"><div style="font-weight:700;font-size:20px;letter-spacing:1px">Счет на оплату \u2116 ' + escapeHtml(doc.docNumber || '') + '</div>' + '<div style="margin-top:4px;font-size:13px">от ' + fmtDate(doc.documentDate) + '</div></div>';
     h += '<div style="margin-bottom:12px">';
@@ -1286,9 +1233,9 @@ function buildClassicInvoiceHTML(doc) {
     h += '</div>';
     h += '<div style="margin-bottom:12px;font-size:12px">';
     h += '<div><strong>Поставщик:</strong> БИН / ИИН ' + escapeHtml(bin) + ', ' + escapeHtml(storeName) + '</div>';
-    var custIIN = si.customerIIN || '';
-    var custAddr = si.customerAddress || '';
-    var buyerStr = escapeHtml(doc.customerName || '\u2014');
+    const custIIN = si.customerIIN || '';
+    const custAddr = si.customerAddress || '';
+    const buyerStr = escapeHtml(doc.customerName || '\u2014');
     if (custIIN)
         buyerStr = 'БИН / ИИН ' + escapeHtml(custIIN) + ',' + buyerStr;
     if (custAddr)
@@ -1298,7 +1245,7 @@ function buildClassicInvoiceHTML(doc) {
     h += '</div>';
     h += '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px">';
     h += '<thead><tr>' + '<th style="padding:8px;border:1px solid #000;text-align:center;width:36px">\u2116</th>' + '<th style="padding:8px;border:1px solid #000;text-align:left">Наименование</th>' + '<th style="padding:8px;border:1px solid #000;text-align:center;width:60px">Кол-во</th>' + '<th style="padding:8px;border:1px solid #000;text-align:center;width:50px">Ед.</th>' + '<th style="padding:8px;border:1px solid #000;text-align:right;width:100px">Цена</th>' + '<th style="padding:8px;border:1px solid #000;text-align:right;width:120px">Сумма</th>' + '</tr></thead><tbody>';
-    (doc.items || []).forEach(function (it, i) {
+    (doc.items || []).forEach(it, i => {
         h += '<tr>' + '<td style="padding:8px;border:1px solid #000;text-align:center">' + (i + 1) + '</td>' + '<td style="padding:8px;border:1px solid #000">' + escapeHtml(it.productName || it.productCode || '') + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:center">' + (it.quantity || 0) + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:center">' + escapeHtml(it.unit || 'шт') + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:right">' + fmt(it.unitPrice) + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:right">' + fmt(it.total) + '</td>' + '</tr>';
     });
     h += '</tbody></table>';
@@ -1316,22 +1263,22 @@ function buildClassicInvoiceHTML(doc) {
 }
 
 function buildClassicZ2HTML(doc) {
-    var si = doc.meta && doc.meta.storeInfo || {};
-    var storeName = si.storeName || 'Организация';
-    var bin = si.bin || '\u2014';
-    var address = si.address || '';
-    var phone = si.phone || '';
-    var directorName = si.directorName || '';
-    var directorPosition = si.directorPosition || 'Директор';
-    var extraInfo = si.extra || '';
-    var totalQty = 0;
-    (doc.items || []).forEach(function (it) {
+    const si = doc.meta && doc.meta.storeInfo || {};
+    const storeName = si.storeName || 'Организация';
+    const bin = si.bin || '\u2014';
+    const address = si.address || '';
+    const phone = si.phone || '';
+    const directorName = si.directorName || '';
+    const directorPosition = si.directorPosition || 'Директор';
+    const extraInfo = si.extra || '';
+    const totalQty = 0;
+    (doc.items || []).forEach(it => {
         totalQty += Number(it.quantity || 0);
     });
-    var h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:980px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
+    const h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:980px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
     h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">' + '<div style="font-size:12px;line-height:1.4">Приложение 26<br>к приказу Министра финансов<br>Республики Казахстан<br>от 20 декабря 2012 года \u2116 562</div>' + '<div style="font-size:16px;font-weight:700">Форма 3-2</div></div>';
     h += '<div style="text-align:center;font-size:18px;font-weight:700;margin-bottom:14px">НАКЛАДНАЯ НА ОТПУСК ЗАПАСОВ НА СТОРОНУ</div>';
-    var senderLines = '<strong>Организация (индивидуальный предприниматель) - отправитель:</strong> ' + escapeHtml(storeName) + '<br><strong>БИН/ИИН:</strong> ' + escapeHtml(bin);
+    const senderLines = '<strong>Организация (индивидуальный предприниматель) - отправитель:</strong> ' + escapeHtml(storeName) + '<br><strong>БИН/ИИН:</strong> ' + escapeHtml(bin);
     if (address)
         senderLines += '<br><strong>Адрес:</strong> ' + escapeHtml(address);
     if (phone)
@@ -1341,10 +1288,10 @@ function buildClassicZ2HTML(doc) {
     if (extraInfo)
         senderLines += '<br><em>' + escapeHtml(extraInfo) + '</em>';
     h += '<div style="margin-bottom:14px">' + senderLines + '</div>';
-    var custIIN = si.customerIIN || '';
-    var custAddr = si.customerAddress || '';
+    const custIIN = si.customerIIN || '';
+    const custAddr = si.customerAddress || '';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">';
-    var recHtml = '<strong>Организация (ИП) - получатель:</strong><br>' + escapeHtml(doc.customerName || '\u2014');
+    const recHtml = '<strong>Организация (ИП) - получатель:</strong><br>' + escapeHtml(doc.customerName || '\u2014');
     if (custIIN)
         recHtml += '<br><strong>БИН/ИИН:</strong> ' + escapeHtml(custIIN);
     if (custAddr)
@@ -1354,7 +1301,7 @@ function buildClassicZ2HTML(doc) {
     h += '</div>';
     h += '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px">';
     h += '<thead><tr>' + '<th style="padding:8px;border:1px solid #000;text-align:center;width:36px">\u2116 п/п</th>' + '<th style="padding:8px;border:1px solid #000;text-align:center;width:100px">Номенклатурный номер</th>' + '<th style="padding:8px;border:1px solid #000;text-align:left">Наименование, характеристика</th>' + '<th style="padding:8px;border:1px solid #000;text-align:center;width:50px">Ед.изм.</th>' + '<th style="padding:8px;border:1px solid #000;text-align:right;width:70px">Количество</th>' + '<th style="padding:8px;border:1px solid #000;text-align:right;width:100px">Цена за единицу, KZT</th>' + '<th style="padding:8px;border:1px solid #000;text-align:right;width:120px">Сумма с НДС, KZT</th>' + '</tr></thead><tbody>';
-    (doc.items || []).forEach(function (it, i) {
+    (doc.items || []).forEach(it, i => {
         h += '<tr>' + '<td style="padding:8px;border:1px solid #000;text-align:center">' + (i + 1) + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:center">' + escapeHtml(it.productCode || '') + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:left">' + escapeHtml(it.productName || '') + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:center">' + escapeHtml(it.unit || 'шт') + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:right">' + (it.quantity || 0) + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:right">' + fmt(it.unitPrice) + '</td>' + '<td style="padding:8px;border:1px solid #000;text-align:right">' + fmt(it.total) + '</td>' + '</tr>';
     });
     h += '</tbody></table>';
@@ -1374,26 +1321,26 @@ function buildClassicZ2HTML(doc) {
 }
 
 function buildClassicSFHTML(doc) {
-    var store = window.ApAuth && window.ApAuth.getCurrentStore();
-    var si = doc.meta && doc.meta.storeInfo || {};
-    var storeName = si.storeName || (store ? store.storeName : 'SANAQ');
-    var storeBin = si.bin || localStorage.getItem('ap_store_bin') || '';
-    var storeNdscert = si.ndsCert || localStorage.getItem('ap_store_nds_cert') || '';
-    var storeAddr = si.address || localStorage.getItem('ap_store_address') || '';
-    var bankName = si.bankName || localStorage.getItem('ap_store_bank_name') || '';
-    var iik = si.iik || localStorage.getItem('ap_store_iik') || '';
-    var bik = si.bik || localStorage.getItem('ap_store_bik') || '';
-    var items = doc.items || [];
-    var total = doc.total || 0;
-    var ndsRate = 12;
-    var totalNoNds = 0, totalNds = 0;
+    const store = window.ApAuth && window.ApAuth.getCurrentStore();
+    const si = doc.meta && doc.meta.storeInfo || {};
+    const storeName = si.storeName || (store ? store.storeName : 'SANAQ');
+    const storeBin = si.bin || localStorage.getItem('ap_store_bin') || '';
+    const storeNdscert = si.ndsCert || localStorage.getItem('ap_store_nds_cert') || '';
+    const storeAddr = si.address || localStorage.getItem('ap_store_address') || '';
+    const bankName = si.bankName || localStorage.getItem('ap_store_bank_name') || '';
+    const iik = si.iik || localStorage.getItem('ap_store_iik') || '';
+    const bik = si.bik || localStorage.getItem('ap_store_bik') || '';
+    const items = doc.items || [];
+    const total = doc.total || 0;
+    const ndsRate = 12;
+    const totalNoNds = 0, totalNds = 0;
     function ndsRow(v) {
         return v * ndsRate / (100 + ndsRate);
     }
     function ndsOnly(v) {
         return v - ndsRow(v);
     }
-    var h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:960px;margin:0 auto;padding:24px 20px;font-size:12px;line-height:1.4">';
+    const h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:960px;margin:0 auto;padding:24px 20px;font-size:12px;line-height:1.4">';
     h += '<div style="font-size:10px;color:#555;text-align:right;margin-bottom:4px">Форма по ОКУД 0710002</div>';
     h += '<div style="text-align:center;font-size:18px;font-weight:700;margin-bottom:4px">СЧЁТ-ФАКТУРА</div>';
     h += '<div style="text-align:center;font-size:12px;color:#333;margin-bottom:16px">Счёт-фактура \u2116 ' + (doc.docNumber || doc.number || doc.id.slice(0, 6)) + ' от "' + fmtDate(doc.documentDate).replace(/(\d+)\.(\d+)\.(\d+).*/, '$1 $2 $3') + '"</div>';
@@ -1410,8 +1357,8 @@ function buildClassicSFHTML(doc) {
         h += '<div style="font-size:11px;margin-top:4px;padding:4px;background:#f5f5f5">' + '<strong>Банковские реквизиты:</strong> ' + (iik ? 'ИИК ' + escapeHtml(iik) + '; ' : '') + (bik ? 'БИК ' + escapeHtml(bik) + '; ' : '') + (bankName ? escapeHtml(bankName) : '') + '</div>';
     }
     h += '</div>';
-    var custIIN = doc.customerIIN || doc.meta && doc.meta.customerIIN || '';
-    var custAddr = doc.customerAddress || doc.meta && doc.meta.customerAddress || '';
+    const custIIN = doc.customerIIN || doc.meta && doc.meta.customerIIN || '';
+    const custAddr = doc.customerAddress || doc.meta && doc.meta.customerAddress || '';
     h += '<div style="margin-bottom:12px">';
     h += '<div style="font-weight:700;font-size:13px;margin-bottom:4px">Покупатель:</div>';
     h += '<table style="width:100%;border-collapse:collapse;font-size:11px">';
@@ -1425,11 +1372,11 @@ function buildClassicSFHTML(doc) {
     if (!items.length) {
         h += '<tr><td colspan="9" style="padding:12px;border:1.5px solid #000;text-align:center;color:#888">Нет товаров</td></tr>';
     } else {
-        items.forEach(function (it, i) {
-            var cost = it.total || it.unitPrice * it.quantity;
-            var priceNoNds = ndsOnly(it.unitPrice || 0);
-            var ndsAmt = ndsRow(cost);
-            var incNds = cost;
+        items.forEach(it, i => {
+            const cost = it.total || it.unitPrice * it.quantity;
+            const priceNoNds = ndsOnly(it.unitPrice || 0);
+            const ndsAmt = ndsRow(cost);
+            const incNds = cost;
             totalNoNds += ndsOnly(cost);
             totalNds += ndsAmt;
             h += '<tr>' + '<td style="padding:4px;border:1.5px solid #000;text-align:center">' + (i + 1) + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:left">' + escapeHtml(it.productName || '') + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:center">' + (it.unit || 'шт') + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:center">' + (it.quantity || 0) + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:right">' + fmt(priceNoNds) + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:right">' + fmt(ndsOnly(cost)) + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:center">' + ndsRate + '%</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:right">' + fmt(ndsAmt) + '</td>' + '<td style="padding:4px;border:1.5px solid #000;text-align:right;font-weight:600">' + fmt(incNds) + '</td>' + '</tr>';
@@ -1451,7 +1398,7 @@ function buildClassicSFHTML(doc) {
 }
 
 function buildClassicPKOHTML(doc) {
-    var h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:700px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
+    const h = '<div style="font-family:\'Times New Roman\',Times,serif;color:#000;max-width:700px;margin:0 auto;padding:24px 20px;font-size:13px;line-height:1.4">';
     h += '<div style="text-align:center;font-size:16px;font-weight:700;margin-bottom:8px">ПРИХОДНЫЙ КАССОВЫЙ ОРДЕР</div>';
     h += '<div style="display:flex;justify-content:space-between;margin-bottom:16px">' + '<span><strong>\u2116:</strong> ' + (doc.docNumber || doc.number || doc.id.slice(0, 6)) + '</span>' + '<span><strong>Дата:</strong> ' + fmtDate(doc.documentDate) + '</span>' + '</div>';
     h += '<div style="border:1px solid #000;padding:16px;margin-bottom:16px">';
@@ -1465,19 +1412,18 @@ function buildClassicPKOHTML(doc) {
 }
 
 function openDocumentView(docId) {
-    var docs = getDocuments();
-    var doc = docs.find(function (d) {
-        return d.id === docId;
+    const docs = getDocuments();
+    const doc = docs.find(d => d.id === docId;
     });
     if (!doc) {
         toast('Документ не найден', 'err');
         return;
     }
     window._currentDocId = docId;
-    var content = document.getElementById('document-view-content');
-    var title = document.getElementById('modal-doc-title');
-    var dt = doc.type || doc.docType || '';
-    var adapted = Object.assign({}, doc, {
+    const content = document.getElementById('document-view-content');
+    const title = document.getElementById('modal-doc-title');
+    const dt = doc.type || doc.docType || '';
+    const adapted = Object.assign({}, doc, {
         docNumber: doc.number || doc.docNumber || '',
         documentDate: doc.date || doc.documentDate || new Date().toISOString(),
         customerName: doc.clientName || doc.customerName || doc.recipientName || '',
@@ -1507,17 +1453,17 @@ function openDocumentView(docId) {
         if (title)
             title.textContent = (dt === 'invoice' ? 'Счет на оплату' : 'Накладная З-2') + ' \u2116' + (doc.number || doc.docNumber || doc.id.slice(0, 6));
         if (content) {
-            var clientInfo = dt === 'invoice' ? '<p><strong>Клиент:</strong> ' + esc(doc.clientName || doc.customerName || '\u2014') + (doc.clientPhone || doc.customerPhone ? ' (' + esc(doc.clientPhone || doc.customerPhone) + ')' : '') + '</p>' : '<p><strong>Получатель:</strong> ' + esc(doc.recipientName || '\u2014') + '</p>';
-            var itemsHtml = '<table><thead><tr><th>Код</th><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>';
-            (doc.items || []).forEach(function (it) {
+            const clientInfo = dt === 'invoice' ? '<p><strong>Клиент:</strong> ' + esc(doc.clientName || doc.customerName || '\u2014') + (doc.clientPhone || doc.customerPhone ? ' (' + esc(doc.clientPhone || doc.customerPhone) + ')' : '') + '</p>' : '<p><strong>Получатель:</strong> ' + esc(doc.recipientName || '\u2014') + '</p>';
+            const itemsHtml = '<table><thead><tr><th>Код</th><th>Товар</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>';
+            (doc.items || []).forEach(it => {
                 itemsHtml += '<tr><td>' + esc(it.productCode || '') + '</td><td>' + esc(it.productName || '') + '</td><td>' + it.quantity + '</td><td>' + fmt(it.unitPrice) + '</td><td>' + fmt(it.total || it.unitPrice * it.quantity) + '</td></tr>';
             });
             itemsHtml += '</tbody></table>';
-            var statusLabel = doc.status === 'pending' ? 'Ожидает' : doc.status === 'paid' ? 'Оплачено' : doc.status === 'issued' ? 'Выписано' : 'Отменено';
+            const statusLabel = doc.status === 'pending' ? 'Ожидает' : doc.status === 'paid' ? 'Оплачено' : doc.status === 'issued' ? 'Выписано' : 'Отменено';
             content.innerHTML = '<div style="margin-bottom:16px">' + clientInfo + '<p><strong>Дата:</strong> ' + fmtDate(doc.date || doc.documentDate) + '</p>' + '<p><strong>Статус:</strong> <span class="badge badge-' + (doc.status === 'paid' || doc.status === 'issued' ? 'ok' : doc.status === 'cancelled' ? 'danger' : 'warn') + '">' + statusLabel + '</span></p>' + '<p><strong>Итого:</strong> ' + fmt(doc.total || 0) + ' \u20B8</p></div>' + '<div class="panel"><div class="panel-title">Товары</div>' + itemsHtml + '</div>';
         }
     }
-    var statusBtn = document.getElementById('btn-doc-status');
+    const statusBtn = document.getElementById('btn-doc-status');
     if (statusBtn) {
         if (dt === 'invoice' || dt === 'invoice_sf') {
             statusBtn.style.display = doc.status === 'pending' ? '' : 'none';
@@ -1539,8 +1485,8 @@ function openDocumentView(docId) {
 }
 
 function changeDocumentStatus(docId, status) {
-    var docs = getDocuments();
-    var idx = docs.findIndex(function (d) {
+    const docs = getDocuments();
+    const idx = docs.findIndex(function (d) {
         return d.id === docId;
     });
     if (idx < 0) {
@@ -1556,10 +1502,10 @@ function changeDocumentStatus(docId, status) {
 }
 
 function printDocument() {
-    var content = document.getElementById('document-view-content');
+    const content = document.getElementById('document-view-content');
     if (!content)
         return;
-    var w = window.open('', '', 'width=800,height=600');
+    const w = window.open('', '', 'width=800,height=600');
     if (!w) {
         toast('Разрешите всплывающие окна', 'err');
         return;
@@ -1570,53 +1516,51 @@ function printDocument() {
 }
 
 function downloadDocumentExcel() {
-    var docId = window._currentDocId;
+    const docId = window._currentDocId;
     if (!docId) {
         toast('Нет открытого документа', 'err');
         return;
     }
-    var docs = getDocuments();
-    var doc = docs.find(function (d) {
-        return d.id === docId;
+    const docs = getDocuments();
+    const doc = docs.find(d => d.id === docId;
     });
     if (!doc) {
         toast('Документ не найден', 'err');
         return;
     }
     try {
-        var si = doc.meta && doc.meta.storeInfo || {};
-        var storeName = si.storeName || 'Организация';
-        var bin = si.bin || '\u2014';
-        var iik = si.iik || '\u2014';
-        var bik = si.bik || '\u2014';
-        var bankName = si.bankName || '\u2014';
-        var kbe = si.kbe || '\u2014';
-        var beneficiary = si.beneficiary || storeName;
-        var paymentCode = si.paymentCode || '';
-        var address = si.address || '';
-        var phone = si.phone || '';
-        var directorName = si.directorName || '';
-        var directorPosition = si.directorPosition || 'Директор';
-        var custIIN = si.customerIIN || '';
-        var custAddr = si.customerAddress || '';
-        var contractText = doc.meta && doc.meta.contract || 'Без договора';
-        var comment = doc.comment || '';
-        var isInvoice = (doc.type || doc.docType || '') === 'invoice';
-        var customerName = doc.clientName || doc.customerName || doc.recipientName || '\u2014';
-        var customerPhone = doc.clientPhone || doc.customerPhone || '';
-        var docNumber = doc.number || doc.docNumber || doc.id.slice(0, 6);
-        var docDate = doc.date || doc.documentDate ? new Date(doc.date || doc.documentDate).toLocaleDateString('ru-RU', {
+        const si = doc.meta && doc.meta.storeInfo || {};
+        const storeName = si.storeName || 'Организация';
+        const bin = si.bin || '\u2014';
+        const iik = si.iik || '\u2014';
+        const bik = si.bik || '\u2014';
+        const bankName = si.bankName || '\u2014';
+        const kbe = si.kbe || '\u2014';
+        const beneficiary = si.beneficiary || storeName;
+        const paymentCode = si.paymentCode || '';
+        const address = si.address || '';
+        const phone = si.phone || '';
+        const directorName = si.directorName || '';
+        const directorPosition = si.directorPosition || 'Директор';
+        const custIIN = si.customerIIN || '';
+        const custAddr = si.customerAddress || '';
+        const contractText = doc.meta && doc.meta.contract || 'Без договора';
+        const comment = doc.comment || '';
+        const isInvoice = (doc.type || doc.docType || '') === 'invoice';
+        const customerName = doc.clientName || doc.customerName || doc.recipientName || '\u2014';
+        const customerPhone = doc.clientPhone || doc.customerPhone || '';
+        const docNumber = doc.number || doc.docNumber || doc.id.slice(0, 6);
+        const docDate = doc.date || doc.documentDate ? new Date(doc.date || doc.documentDate).toLocaleDateString('ru-RU', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
         }) : '\u2014';
-        var totalRaw = doc.total || 0;
-        var items = doc.items || [];
-        var totalQty = items.reduce(function (s, it) {
-            return s + Number(it.quantity || 0);
+        const totalRaw = doc.total || 0;
+        const items = doc.items || [];
+        const totalQty = items.reduce(s, it => s + Number(it.quantity || 0);
         }, 0);
-        var wb = XLSX.utils.book_new();
-        var data = [], merges = [];
+        const wb = XLSX.utils.book_new();
+        const data = [], merges = [];
         function M(r1, c1, r2, c2) {
             merges.push({
                 s: {
@@ -1658,17 +1602,15 @@ function downloadDocumentExcel() {
         function tin(s) {
             return { style: s || 'thin' };
         }
-        function med() {
-            return { style: 'medium' };
-        }
+        const med = () => ({ style: 'medium' });
         function buildSheetFromData(data, merges) {
-            var ws = {};
-            var maxR = -1, maxC = -1;
+            const ws = {};
+            const maxR = -1, maxC = -1;
             for (var r = 0; r < data.length; r++) {
                 if (!data[r])
                     continue;
                 for (var c = 0; c < data[r].length; c++) {
-                    var cell = data[r][c];
+                    const cell = data[r][c];
                     if (cell === undefined || cell === null)
                         continue;
                     if (!cell.t) {
@@ -1689,7 +1631,7 @@ function downloadDocumentExcel() {
                         maxC = c;
                 }
             }
-            var refEnd = XLSX.utils.encode_cell({
+            const refEnd = XLSX.utils.encode_cell({
                 r: Math.max(maxR, 0),
                 c: Math.max(maxC, 0)
             });
@@ -1707,7 +1649,7 @@ function downloadDocumentExcel() {
             };
         }
         if (isInvoice) {
-            var C = {
+            const C = {
                 B: 1,
                 D: 3,
                 E: 4,
@@ -1762,7 +1704,7 @@ function downloadDocumentExcel() {
                 v: 'center'
             })));
             function bb(top, right, bottom, left) {
-                var b = {};
+                const b = {};
                 if (top)
                     b.top = tin();
                 if (right)
@@ -1922,9 +1864,9 @@ function downloadDocumentExcel() {
                 }
             });
             M(12, C.V, 12, C.AC);
-            var titles = ['Счет на оплату \u2116 ' + docNumber + ' от ' + docDate];
-            var d = doc.date ? new Date(doc.date) : new Date();
-            var ms = [
+            const titles = ['Счет на оплату \u2116 ' + docNumber + ' от ' + docDate];
+            const d = doc.date ? new Date(doc.date) : new Date();
+            const ms = [
                 'января',
                 'февраля',
                 'марта',
@@ -1961,7 +1903,7 @@ function downloadDocumentExcel() {
                 v: 'top'
             })));
             M(21, C.B, 21, C.E);
-            var bStr = customerName;
+            const bStr = customerName;
             if (custIIN)
                 bStr = 'БИН / ИИН ' + custIIN + ', ' + bStr;
             if (custAddr)
@@ -1984,7 +1926,7 @@ function downloadDocumentExcel() {
             })));
             M(23, C.F, 23, C.AM);
             function thdr(rr, txt, c1, c2, leftB, rightB) {
-                var b = {
+                const b = {
                     top: med(),
                     bottom: tin('thin')
                 };
@@ -2016,12 +1958,12 @@ function downloadDocumentExcel() {
             thdr(25, 'Ед.', C.X, C.Z, false, false);
             thdr(25, 'Цена', C.AA, C.AF, false, false);
             thdr(25, 'Сумма', C.AG, C.AL, false, true);
-            var rowN = 26;
-            items.forEach(function (it, idx) {
-                var price = it.unitPrice || 0;
-                var sum = it.total || price * (it.quantity || 0);
+            const rowN = 26;
+            items.forEach(it, idx => {
+                const price = it.unitPrice || 0;
+                const sum = it.total || price * (it.quantity || 0);
                 function tcell(rrr, c1, c2, txt, al, leftM, rightM) {
-                    var b = {
+                    const b = {
                         top: tin(),
                         bottom: tin()
                     };
@@ -2056,9 +1998,9 @@ function downloadDocumentExcel() {
                 tcell(rowN, C.AG, C.AL, sum, 'right', false, true);
                 rowN++;
             });
-            var rr = rowN;
+            const rr = rowN;
             function totCell(rrr, c1, c2, txt, leftM, rightM) {
-                var b = {
+                const b = {
                     top: med(),
                     bottom: med()
                 };
@@ -2111,7 +2053,7 @@ function downloadDocumentExcel() {
                 v: 'center'
             })));
             M(rr, C.W, rr, C.AM);
-            var ws = buildSheetFromData(data, merges);
+            const ws = buildSheetFromData(data, merges);
             ws['!cols'] = [
                 { wch: 2 },
                 { wch: 3 },
@@ -2159,20 +2101,20 @@ function downloadDocumentExcel() {
             };
             XLSX.utils.book_append_sheet(wb, ws, 'Лист_1');
         } else {
-            var C = {};
+            const C = {};
             for (var ci = 0; ci <= 48; ci++) {
                 if (ci < 26)
                     C[String.fromCharCode(65 + ci)] = ci;
                 else
                     C['A' + String.fromCharCode(65 + ci - 26)] = ci;
             }
-            var appLines = [
+            const appLines = [
                 'Приложение 26',
                 'к приказу Министра финансов',
                 'Республики Казахстан',
                 'от 20 декабря 2012 года \u2116 562'
             ];
-            appLines.forEach(function (l, i) {
+            appLines.forEach(l, i => {
                 cellAt(data, i, C.AN, fmtCell(l, fnt(8, false, true, {
                     h: 'center',
                     v: 'center'
@@ -2226,7 +2168,7 @@ function downloadDocumentExcel() {
             })));
             M(14, C.A, 14, C.AW);
             function z2HdrBdr(leftM, rightM) {
-                var b = {
+                const b = {
                     top: med(),
                     bottom: tin('thin')
                 };
@@ -2241,7 +2183,7 @@ function downloadDocumentExcel() {
                 return b;
             }
             function z2ValBdr(leftM, rightM) {
-                var b = {
+                const b = {
                     top: tin('thin'),
                     bottom: tin('thin')
                 };
@@ -2255,7 +2197,7 @@ function downloadDocumentExcel() {
                     b.right = tin();
                 return b;
             }
-            var hdrs18 = [
+            const hdrs18 = [
                 {
                     t: 'Организация (ИП) - отправитель',
                     c1: C.A,
@@ -2292,7 +2234,7 @@ function downloadDocumentExcel() {
                     r: true
                 }
             ];
-            hdrs18.forEach(function (h) {
+            hdrs18.forEach(h => {
                 cellAt(data, 17, h.c1, {
                     v: h.t,
                     s: {
@@ -2307,7 +2249,7 @@ function downloadDocumentExcel() {
                 });
                 M(17, h.c1, 17, h.c2);
             });
-            var vals19 = [
+            const vals19 = [
                 {
                     t: storeName,
                     c1: C.A,
@@ -2344,7 +2286,7 @@ function downloadDocumentExcel() {
                     r: true
                 }
             ];
-            vals19.forEach(function (h) {
+            vals19.forEach(h => {
                 cellAt(data, 18, h.c1, {
                     v: h.t,
                     s: {
@@ -2360,7 +2302,7 @@ function downloadDocumentExcel() {
                 M(18, h.c1, 18, h.c2);
             });
             function z2TblHdrBdr(leftM, rightM, isTop) {
-                var b = {
+                const b = {
                     top: isTop ? med() : tin('thin'),
                     bottom: tin('thin')
                 };
@@ -2374,7 +2316,7 @@ function downloadDocumentExcel() {
                     b.right = tin();
                 return b;
             }
-            var tblH = [
+            const tblH = [
                 {
                     t: 'Номер по порядку',
                     r1: 20,
@@ -2466,7 +2408,7 @@ function downloadDocumentExcel() {
                     r: true
                 }
             ];
-            tblH.forEach(function (h) {
+            tblH.forEach(h => {
                 for (var rr = h.r1; rr <= h.r2; rr++) {
                     cellAt(data, rr, h.c1, {
                         v: h.t,
@@ -2483,7 +2425,7 @@ function downloadDocumentExcel() {
                     M(h.r1, h.c1, h.r2, h.c2);
                 }
             });
-            var colNums = [
+            const colNums = [
                 1,
                 2,
                 3,
@@ -2494,7 +2436,7 @@ function downloadDocumentExcel() {
                 8,
                 9
             ];
-            var colRanges = [
+            const colRanges = [
                 [
                     C.A,
                     C.B,
@@ -2542,8 +2484,8 @@ function downloadDocumentExcel() {
                     true
                 ]
             ];
-            colNums.forEach(function (n, i) {
-                var b = {
+            colNums.forEach(n, i => {
+                const b = {
                     top: tin(),
                     bottom: tin('thin')
                 };
@@ -2562,12 +2504,12 @@ function downloadDocumentExcel() {
                 });
                 M(22, colRanges[i][0], 22, colRanges[i][1]);
             });
-            var dr = 23;
-            items.forEach(function (it, idx) {
-                var price = it.unitPrice || 0;
-                var sum = it.total || price * (it.quantity || 0);
+            const dr = 23;
+            items.forEach(it, idx => {
+                const price = it.unitPrice || 0;
+                const sum = it.total || price * (it.quantity || 0);
                 function z2dc(c1, c2, txt, al, leftM, rightM) {
-                    var b = {
+                    const b = {
                         top: tin(),
                         bottom: tin()
                     };
@@ -2606,7 +2548,7 @@ function downloadDocumentExcel() {
                 dr++;
             });
             function z2tc(c1, c2, txt, al, leftM, rightM) {
-                var b = {
+                const b = {
                     top: med(),
                     bottom: med()
                 };
@@ -2649,7 +2591,7 @@ function downloadDocumentExcel() {
             M(dr, C.A, dr, C.AW);
             dr++;
             dr++;
-            var sigLeft = [
+            const sigLeft = [
                 {
                     title: 'Отпуск разрешил:',
                     pos: directorPosition
@@ -2663,8 +2605,8 @@ function downloadDocumentExcel() {
                     pos: ''
                 }
             ];
-            sigLeft.forEach(function (s) {
-                var posTxt = s.pos ? s.pos + ' ' : '';
+            sigLeft.forEach(s => {
+                const posTxt = s.pos ? s.pos + ' ' : '';
                 cellAt(data, dr, C.A, fmtCell(s.title, fnt(8, false, false, {
                     h: 'left',
                     v: 'center'
@@ -2707,8 +2649,8 @@ function downloadDocumentExcel() {
                 h: 'left',
                 v: 'center'
             })));
-            var ws = buildSheetFromData(data, merges);
-            var colW = [];
+            const ws = buildSheetFromData(data, merges);
+            const colW = [];
             for (var ci = 0; ci < 49; ci++)
                 colW.push({ wch: 3 });
             ws['!cols'] = colW;
@@ -2730,7 +2672,7 @@ function downloadDocumentExcel() {
             };
             XLSX.utils.book_append_sheet(wb, ws, 'Лист_1');
         }
-        var filename = (isInvoice ? 'Счет_' : 'Накладная_') + docNumber + '.xlsx';
+        const filename = (isInvoice ? 'Счет_' : 'Накладная_') + docNumber + '.xlsx';
         XLSX.writeFile(wb, filename);
         toast('Excel файл скачан', 'ok');
     } catch (err) {
@@ -2739,19 +2681,17 @@ function downloadDocumentExcel() {
 }
 
 function downloadDocumentHTML() {
-    var content = document.getElementById('document-view-content');
+    const content = document.getElementById('document-view-content');
     if (!content)
         return;
-    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Документ</title></head><body>' + content.innerHTML + '</body></html>';
-    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
+    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Документ</title></head><body>' + content.innerHTML + '</body></html>';
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
     a.href = url;
     a.download = 'document.html';
     a.click();
     URL.revokeObjectURL(url);
 }
-
-
 
 export { getDocuments, setDocuments, getDocTemplates, setDocTemplates, openDocTemplateManager, renderDocTemplates, editDocTemplate, deleteDocTemplate, addDocTemplate, saveDocTemplate, loadDocTemplate, loadDocTemplateNewDoc, selectDocTemplateForDoc, printInvoice, showInvoiceOverlay, printSalePKO, downloadInvoiceExcel, renderDocuments, openDocumentEditById, deleteDocument, duplicateDocument, downloadDocumentPdf, printDocumentById, downloadDocumentExcelById, openCreateInvoiceModal, openCreateZ2Modal, updateInvoiceTypeUI, updateZ2TypeUI, addInvoiceItemRow, addZ2ItemRow, addSFItemRow, saveNewInvoice, saveNewZ2, openCreateSFFModal, saveNewSFF, openCreatePKOModal, saveNewPKO, buildClassicInvoiceHTML, buildClassicZ2HTML, buildClassicSFHTML, buildClassicPKOHTML, openDocumentView, changeDocumentStatus, printDocument, downloadDocumentExcel, downloadDocumentHTML };

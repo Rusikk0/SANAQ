@@ -3,7 +3,7 @@ const ROLE_LABELS = {
     cashier: 'Кассир'
 };
 
-var CODE39 = {
+const CODE39 = {
     '0': 'nnnwwnwnn',
     '1': 'wnnwnnnnw',
     '2': 'nnwwnnnnw',
@@ -50,7 +50,7 @@ var CODE39 = {
     '*': 'nnnwnnwnn'
 };
 
-var EAN_L = [
+const EAN_L = [
     '0001101',
     '0011001',
     '0010011',
@@ -63,7 +63,7 @@ var EAN_L = [
     '0001011'
 ];
 
-var EAN_R = [
+const EAN_R = [
     '1110010',
     '1100110',
     '1101100',
@@ -76,7 +76,7 @@ var EAN_R = [
     '1110100'
 ];
 
-var EAN_G = [
+const EAN_G = [
     '0100111',
     '0110011',
     '0011011',
@@ -89,7 +89,7 @@ var EAN_G = [
     '0010111'
 ];
 
-var EAN_PARITY = [
+const EAN_PARITY = [
     'LLLLLL',
     'LLGLGG',
     'LLGGLG',
@@ -102,9 +102,9 @@ var EAN_PARITY = [
     'LGGLGL'
 ];
 
-var SCAN_MAX_GAP = 45;
+const SCAN_MAX_GAP = 45;
 
-var EXCEL_SECTIONS = {
+const EXCEL_SECTIONS = {
     products: {
         label: 'Товары',
         headers: [
@@ -566,7 +566,7 @@ var EXCEL_SECTIONS = {
     }
 };
 
-var PAGE_PERMISSION_GROUP = {
+const PAGE_PERMISSION_GROUP = {
     sales: 'Продажи',
     products: 'Товары',
     categories: 'Категории',
@@ -582,7 +582,7 @@ var PAGE_PERMISSION_GROUP = {
     documents: 'Продажи'
 };
 
-var DEFAULT_PERMISSIONS = {
+const DEFAULT_PERMISSIONS = {
     viewSales: true,
     viewReceiptHistory: true,
     searchReceipts: true,
@@ -664,7 +664,7 @@ var DEFAULT_PERMISSIONS = {
     clearData: false
 };
 
-var PERMISSION_GROUPS = {
+const PERMISSION_GROUPS = {
     'Продажи': [
         'viewSales',
         'viewReceiptHistory',
@@ -762,7 +762,7 @@ var PERMISSION_GROUPS = {
     ]
 };
 
-var PERMISSION_LABELS = {
+const PERMISSION_LABELS = {
     viewSales: 'Просмотр продаж',
     viewReceiptHistory: 'Просмотр истории чеков',
     searchReceipts: 'Поиск чеков',
